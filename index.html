@@ -1,0 +1,2770 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тёмное пророчество · Эпическая Сага</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0b0e14; font-family: 'Cinzel', 'Palatino', 'Georgia', serif;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 12px; background-image: radial-gradient(circle at 30% 10%, #1e2a3a 0%, #0a0c10 90%);
+      color: #e9e6d7; overflow-x: hidden;
+    }
+    .rpg-container {
+      max-width: 1000px; width: 100%;
+      background: linear-gradient(145deg, #252a34 0%, #161a22 100%);
+      border: 3px solid #ad8b5f; border-radius: 32px 32px 24px 24px;
+      box-shadow: 0 0 0 1px #5f4e3c, 0 20px 40px rgba(0, 0, 0, 0.8), inset 0 0 30px rgba(173, 139, 95, 0.2);
+      padding: 22px 26px 24px; position: relative;
+      transition: border-color 0.6s, box-shadow 0.6s;
+    }
+    .rpg-container[data-faction="light"] { border-color: #f3d59b; box-shadow: 0 0 0 1px #f3d59b, 0 20px 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(243,213,155,0.3); }
+    .rpg-container[data-faction="dark"] { border-color: #8b3a3a; box-shadow: 0 0 0 1px #8b3a3a, 0 20px 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(139,58,58,0.35); }
+    .rpg-container[data-faction="neutral"] { border-color: #a7c8e8; box-shadow: 0 0 0 1px #a7c8e8, 0 20px 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(167,200,232,0.25); }
+    .rpg-container[data-faction="chaos"] { border-color: #c9a7e8; box-shadow: 0 0 0 1px #c9a7e8, 0 20px 40px rgba(0,0,0,0.8), inset 0 0 50px rgba(201,167,232,0.3); }
+    .rpg-container.mad-ending { animation: madShake 0.15s infinite; }
+    .rpg-container.dream-ending { animation: dreamPulse 3s infinite ease-in-out; }
+    .rpg-container.battle-mode { animation: battlePulse 0.8s infinite; }
+    @keyframes madShake {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(-1px, 1px) rotate(-0.3deg); }
+      50% { transform: translate(1px, -1px) rotate(0.3deg); }
+      75% { transform: translate(-1px, -1px) rotate(-0.2deg); }
+      100% { transform: translate(1px, 1px) rotate(0.2deg); }
+    }
+    @keyframes dreamPulse {
+      0%, 100% { filter: brightness(1) blur(0); }
+      50% { filter: brightness(0.7) blur(1.5px); }
+    }
+    @keyframes battlePulse {
+      0%, 100% { box-shadow: 0 0 0 1px #ad8b5f, 0 0 30px rgba(212, 122, 106, 0.5); }
+      50% { box-shadow: 0 0 0 1px #d47a6a, 0 0 60px rgba(212, 122, 106, 0.9); }
+    }
+    .rpg-container::before, .rpg-container::after {
+      content: "⚔"; position: absolute; font-size: 24px; color: #ad8b5f;
+      opacity: 0.6; text-shadow: 0 0 6px #b87c3a;
+    }
+    .rpg-container::before { top: 8px; left: 16px; transform: rotate(-15deg); }
+    .rpg-container::after { bottom: 8px; right: 16px; transform: rotate(15deg); }
+    .chapter { text-align: center; margin-bottom: 12px; border-bottom: 2px solid #4a3f30; padding-bottom: 10px; }
+    .chapter h1 { font-size: 1.7rem; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; color: #e4c9a0; text-shadow: 0 2px 0 #4a2e1a, 0 0 14px #b87c3a; }
+    .chapter .subtitle { font-size: 0.8rem; color: #b9a68b; font-style: italic; letter-spacing: 1px; margin-top: 4px; }
+    .top-bar { display: grid; grid-template-columns: 1fr 1fr 1fr auto auto; gap: 6px; margin-bottom: 10px; }
+    .info-badge {
+      background: #1b1e26; border: 1px solid #4f4436; border-radius: 30px;
+      padding: 6px 10px; font-size: 0.72rem; letter-spacing: 0.4px;
+      display: flex; align-items: center; gap: 5px; color: #c9b28c; justify-content: center;
+    }
+    .char-btn {
+      background: #2a2418; border: 1px solid #ad8b5f; border-radius: 30px;
+      padding: 6px 14px; font-size: 0.72rem; letter-spacing: 0.4px;
+      display: flex; align-items: center; gap: 5px; color: #e4c9a0;
+      justify-content: center; cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .char-btn:hover { background: #3a3020; box-shadow: 0 0 12px #b87c3a88; }
+    .char-btn.codex-btn { background: #1e1a2e; border-color: #8a7ac8; color: #b8a8e8; }
+    .char-btn.codex-btn:hover { background: #2a2440; box-shadow: 0 0 12px #8a7ac888; }
+    .story-screen {
+      background: #0e1219; border-radius: 18px; padding: 22px 24px;
+      border: 1px solid #4a3f30; box-shadow: inset 0 0 30px #00000066, 0 6px 0 #0b0e12;
+      margin-bottom: 14px; min-height: 220px;
+      display: flex; flex-direction: column; justify-content: center;
+      font-size: 1rem; line-height: 1.75; color: #dad2c0; text-shadow: 0 1px 2px black;
+    }
+    .story-screen p { margin-bottom: 12px; }
+    .story-screen p:last-child { margin-bottom: 0; }
+    .highlight { color: #f3d59b; font-weight: 600; text-shadow: 0 0 8px #b87c3a; }
+    .danger { color: #d47a6a; font-weight: 600; }
+    .magic { color: #a7c8e8; font-style: italic; }
+    .success { color: #9fd18f; font-weight: 600; }
+    .mystery { color: #c9a7e8; font-style: italic; }
+    .warn { color: #e8a87c; font-weight: 600; }
+    .epic { color: #ff6b35; font-weight: 700; text-shadow: 0 0 12px #ff6b35; letter-spacing: 1px; }
+    .dream { color: #b8a8e8; font-style: italic; opacity: 0.9; text-shadow: 0 0 8px #8a7ac8; }
+    .choices-panel { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .choice-btn {
+      background: #1f222b; border: 2px solid #6b5a44; border-radius: 60px;
+      padding: 11px 18px; font-family: 'Cinzel', 'Palatino', serif;
+      font-size: 0.93rem; font-weight: 500; color: #e9dccd;
+      letter-spacing: 0.3px; text-align: left;
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; transition: all 0.18s ease;
+      box-shadow: 0 4px 0 #0e0b08, 0 0 0 1px #b87c3a33;
+      position: relative; min-height: 46px;
+    }
+    .choice-btn:hover {
+      background: #2d2f3c; border-color: #c9a87c;
+      box-shadow: 0 2px 0 #0e0b08, 0 0 12px #b87c3a88;
+      transform: translateY(-2px); color: #ffffff;
+    }
+    .choice-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #0e0b08; }
+    .choice-btn .icon { font-size: 1.3rem; filter: drop-shadow(0 0 6px #ad8b5f); min-width: 26px; text-align: center; }
+    .choice-btn.special { border-color: #c9a7e8; background: #221b2e; box-shadow: 0 4px 0 #0e0b08, 0 0 12px #c9a7e855; }
+    .choice-btn.special:hover { box-shadow: 0 2px 0 #0e0b08, 0 0 20px #c9a7e8; }
+    .choice-btn.danger-choice { border-color: #8b3a3a; background: #2a1a1a; }
+    .choice-btn.danger-choice:hover { box-shadow: 0 2px 0 #0e0b08, 0 0 16px #d47a6a; }
+    .choice-btn.battle-choice { border-color: #ff6b35; background: #2a1a10; box-shadow: 0 4px 0 #0e0b08, 0 0 16px #ff6b3555; }
+    .choice-btn.battle-choice:hover { box-shadow: 0 2px 0 #0e0b08, 0 0 24px #ff6b35; background: #3a2015; }
+    .choice-btn.dream-choice { border-color: #8a7ac8; background: #1e1a2e; box-shadow: 0 4px 0 #0e0b08, 0 0 16px #8a7ac855; font-style: italic; }
+    .choice-btn.dream-choice:hover { box-shadow: 0 2px 0 #0e0b08, 0 0 24px #b8a8e8; }
+    .status-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 10px; border-top: 1px solid #4a3f30;
+      color: #b9a68b; font-size: 0.72rem;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      flex-wrap: wrap; gap: 5px;
+    }
+    .status-bar .stat {
+      display: flex; align-items: center; gap: 4px;
+      background: #1b1e26; padding: 5px 10px; border-radius: 40px;
+      border: 1px solid #4f4436;
+    }
+    .status-bar .stat i { font-style: normal; font-size: 0.9rem; }
+    .fade-in { animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn {
+      from { opacity: 0.2; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hint { text-align: center; color: #6e6455; font-size: 0.75rem; margin-top: 10px; font-style: italic; letter-spacing: 0.5px; }
+    .mystery-indicator {
+      text-align: center; font-size: 0.75rem; letter-spacing: 3px;
+      text-transform: uppercase; margin-bottom: 8px; color: #6e6455; min-height: 16px;
+    }
+    .revelation { text-align: center; padding: 20px 10px; animation: revelationAppear 1.2s ease; }
+    @keyframes revelationAppear {
+      0% { opacity: 0; transform: scale(0.9); }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .revelation-title { font-size: 1.6rem; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 16px; font-weight: 700; text-shadow: 0 0 20px currentColor; }
+    .revelation-sub { font-size: 0.9rem; color: #b9a68b; letter-spacing: 1px; margin-bottom: 20px; font-style: italic; }
+    .revelation-body { font-size: 1.05rem; line-height: 1.8; max-width: 750px; margin: 0 auto; }
+    .battle-hud {
+      background: #1a0e0e; border: 2px solid #8b3a3a; border-radius: 14px;
+      padding: 12px 18px; margin-bottom: 14px; display: none;
+    }
+    .battle-hud.active { display: block; animation: fadeIn 0.4s ease; }
+    .battle-hud-title { font-size: 0.85rem; color: #d47a6a; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; }
+    .battle-hp-bg { width: 100%; height: 14px; background: #2a1a1a; border-radius: 7px; overflow: hidden; border: 1px solid #4a1a1a; }
+    .battle-hp-fill { height: 100%; background: linear-gradient(90deg, #8b3a3a, #d47a6a, #ff6b35); transition: width 0.6s ease; box-shadow: 0 0 12px #d47a6a; }
+    .battle-hp-text { font-size: 0.72rem; color: #b9a68b; text-align: right; margin-top: 4px; }
+
+    /* Модальные панели */
+    .char-panel, .codex-panel {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(5, 8, 12, 0.9); backdrop-filter: blur(6px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 100; padding: 20px; animation: fadeIn 0.3s ease;
+    }
+    .char-panel.open, .codex-panel.open { display: flex; }
+    .char-sheet, .codex-sheet {
+      background: linear-gradient(145deg, #252a34 0%, #161a22 100%);
+      border: 3px solid #ad8b5f; border-radius: 24px;
+      max-width: 760px; width: 100%; max-height: 90vh; overflow-y: auto;
+      padding: 24px 28px;
+      box-shadow: 0 0 0 1px #5f4e3c, 0 20px 60px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(173, 139, 95, 0.15);
+      position: relative;
+    }
+    .codex-sheet { border-color: #8a7ac8; box-shadow: 0 0 0 1px #4a3f6c, 0 20px 60px rgba(0, 0, 0, 0.9), inset 0 0 40px rgba(138, 122, 200, 0.15); }
+    .char-sheet::-webkit-scrollbar, .codex-sheet::-webkit-scrollbar { width: 8px; }
+    .char-sheet::-webkit-scrollbar-track, .codex-sheet::-webkit-scrollbar-track { background: #0e1219; border-radius: 10px; }
+    .char-sheet::-webkit-scrollbar-thumb { background: #ad8b5f; border-radius: 10px; }
+    .codex-sheet::-webkit-scrollbar-thumb { background: #8a7ac8; border-radius: 10px; }
+    .char-header { display: flex; align-items: center; gap: 18px; padding-bottom: 16px; border-bottom: 2px solid #4a3f30; margin-bottom: 18px; }
+    .char-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 30%, #4a3f30, #161a22);
+      border: 3px solid #ad8b5f; display: flex; align-items: center; justify-content: center;
+      font-size: 2.6rem; flex-shrink: 0; box-shadow: 0 0 20px rgba(173, 139, 95, 0.4);
+    }
+    .char-name-block { flex: 1; }
+    .char-name { font-size: 1.4rem; color: #e4c9a0; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; text-shadow: 0 0 12px #b87c3a; }
+    .char-title { font-size: 0.85rem; color: #b9a68b; font-style: italic; letter-spacing: 0.5px; }
+    .close-char {
+      background: transparent; border: 2px solid #6b5a44; color: #e9dccd;
+      border-radius: 50%; width: 38px; height: 38px; font-size: 1.2rem;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .close-char:hover { background: #2d2f3c; border-color: #c9a87c; box-shadow: 0 0 12px #b87c3a88; }
+    .char-section { margin-bottom: 20px; }
+    .char-section-title {
+      font-size: 0.85rem; color: #ad8b5f; letter-spacing: 2px;
+      text-transform: uppercase; margin-bottom: 10px;
+      padding-bottom: 6px; border-bottom: 1px solid #4a3f30;
+    }
+    .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stat-row {
+      display: flex; align-items: center; gap: 8px;
+      background: #0e1219; padding: 8px 12px; border-radius: 10px;
+      border: 1px solid #2a2620; font-size: 0.85rem;
+    }
+    .stat-row .stat-icon { font-size: 1.1rem; min-width: 22px; text-align: center; }
+    .stat-row .stat-label { color: #8a8070; flex: 1; }
+    .stat-row .stat-value { color: #e4c9a0; font-weight: 600; }
+    .hp-bar-bg { width: 100%; height: 6px; background: #2a1a1a; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .hp-bar-fill { height: 100%; background: linear-gradient(90deg, #8b3a3a, #d47a6a); transition: width 0.4s; }
+    .inventory-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+    .inv-item {
+      background: #0e1219; border: 1px solid #4a3f30; border-radius: 10px;
+      padding: 10px; display: flex; align-items: center; gap: 10px;
+      font-size: 0.8rem; color: #dad2c0; transition: all 0.2s;
+    }
+    .inv-item:hover { border-color: #ad8b5f; background: #161a22; box-shadow: 0 0 10px #b87c3a44; }
+    .inv-item .inv-icon { font-size: 1.4rem; filter: drop-shadow(0 0 6px #ad8b5f); min-width: 26px; text-align: center; }
+    .inv-item .inv-name { flex: 1; line-height: 1.2; }
+    .inv-item .inv-name small { display: block; color: #6e6455; font-size: 0.68rem; margin-top: 2px; font-style: italic; }
+    .inv-empty { color: #6e6455; font-style: italic; text-align: center; padding: 14px; font-size: 0.85rem; }
+    .ally-list { display: flex; flex-direction: column; gap: 6px; }
+    .ally-item {
+      background: #0e1219; border-left: 3px solid #ad8b5f; border-radius: 6px;
+      padding: 8px 12px; font-size: 0.85rem; color: #dad2c0;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .ally-item .ally-icon { font-size: 1.2rem; min-width: 22px; text-align: center; }
+    .ally-item .ally-desc { flex: 1; font-size: 0.72rem; color: #8a8070; font-style: italic; margin-top: 2px; }
+    .ally-item .ally-name { color: #e4c9a0; }
+    .ally-item.lost { opacity: 0.45; border-left-color: #8b3a3a; text-decoration: line-through; }
+    .ally-item .worldview-tag {
+      font-size: 0.65rem; padding: 2px 6px; border-radius: 10px;
+      background: #1a1e26; color: #8a8070; letter-spacing: 1px;
+      text-transform: uppercase; font-weight: 600;
+    }
+    .ally-item .worldview-tag.light { color: #f3d59b; border: 1px solid #f3d59b; }
+    .ally-item .worldview-tag.dark { color: #d47a6a; border: 1px solid #8b3a3a; }
+    .ally-item .worldview-tag.neutral { color: #a7c8e8; border: 1px solid #a7c8e8; }
+    .ally-item .worldview-tag.chaos { color: #c9a7e8; border: 1px solid #c9a7e8; }
+    .journal-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .journal-list li {
+      background: #0e1219; padding: 6px 12px; border-radius: 6px;
+      font-size: 0.8rem; color: #b9a68b; border-left: 2px solid #4a3f30;
+    }
+    .journal-list li.loss { border-left-color: #8b3a3a; color: #d47a6a; }
+    .journal-list li.gain { border-left-color: #9fd18f; color: #9fd18f; }
+    .journal-list li.relic { border-left-color: #ff6b35; color: #ff6b35; }
+
+    /* Codex стили */
+    .codex-tabs {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px;
+      border-bottom: 2px solid #4a3f30; padding-bottom: 12px;
+    }
+    .codex-tab {
+      background: #1a1e26; border: 1px solid #4a3f6c; border-radius: 20px;
+      padding: 6px 14px; font-family: inherit; font-size: 0.8rem;
+      color: #b8a8e8; cursor: pointer; transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .codex-tab:hover { background: #2a2440; border-color: #8a7ac8; }
+    .codex-tab.active { background: #2a2440; border-color: #b8a8e8; color: #fff; box-shadow: 0 0 12px #8a7ac888; }
+    .codex-content { display: flex; flex-direction: column; gap: 10px; }
+    .codex-entry {
+      background: #0e1219; border: 1px solid #4a3f30; border-radius: 12px;
+      padding: 14px 18px; font-size: 0.88rem; color: #dad2c0;
+      display: flex; gap: 14px; align-items: flex-start;
+      transition: all 0.2s;
+    }
+    .codex-entry.locked {
+      opacity: 0.5; border-style: dashed;
+      filter: blur(2px); pointer-events: none;
+    }
+    .codex-entry.unlocked:hover { border-color: #8a7ac8; box-shadow: 0 0 12px #8a7ac844; }
+    .codex-icon { font-size: 2rem; flex-shrink: 0; filter: drop-shadow(0 0 6px #8a7ac8); min-width: 40px; text-align: center; }
+    .codex-info { flex: 1; }
+    .codex-title { color: #e4c9a0; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; font-size: 0.98rem; }
+    .codex-desc { color: #b9a68b; font-size: 0.82rem; line-height: 1.5; }
+    .codex-desc .mystery { color: #8a7ac8; }
+    .codex-progress {
+      text-align: center; font-size: 0.85rem; color: #b8a8e8;
+      margin-bottom: 14px; letter-spacing: 1px;
+    }
+
+    .main-menu {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 50% 30%, #1e2a3a 0%, #06080c 90%);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200; padding: 20px; animation: fadeIn 0.5s ease;
+    }
+    .main-menu.hidden { display: none; }
+    .menu-box {
+      max-width: 560px; width: 100%;
+      background: linear-gradient(145deg, #252a34 0%, #161a22 100%);
+      border: 3px solid #ad8b5f; border-radius: 32px;
+      padding: 36px 32px 28px;
+      box-shadow: 0 0 0 1px #5f4e3c, 0 20px 60px rgba(0, 0, 0, 0.9), inset 0 0 50px rgba(173, 139, 95, 0.2);
+      text-align: center; position: relative;
+    }
+    .menu-box::before { content: "⚔"; position: absolute; top: 10px; left: 20px; font-size: 28px; color: #ad8b5f; opacity: 0.6; transform: rotate(-15deg); }
+    .menu-box::after { content: "⚔"; position: absolute; bottom: 10px; right: 20px; font-size: 28px; color: #ad8b5f; opacity: 0.6; transform: rotate(15deg); }
+    .menu-title { font-size: 2.1rem; letter-spacing: 5px; text-transform: uppercase; color: #e4c9a0; text-shadow: 0 2px 0 #4a2e1a, 0 0 24px #b87c3a; margin-bottom: 6px; }
+    .menu-sub { font-size: 0.85rem; color: #b9a68b; font-style: italic; letter-spacing: 1px; margin-bottom: 28px; }
+    .menu-buttons { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+    .menu-btn {
+      background: #1f222b; border: 2px solid #6b5a44; border-radius: 60px;
+      padding: 14px 22px; font-family: 'Cinzel', 'Palatino', serif;
+      font-size: 1rem; font-weight: 600; color: #e9dccd;
+      letter-spacing: 1px; cursor: pointer; transition: all 0.18s ease;
+      box-shadow: 0 4px 0 #0e0b08, 0 0 0 1px #b87c3a33;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .menu-btn:hover {
+      background: #2d2f3c; border-color: #c9a87c;
+      box-shadow: 0 2px 0 #0e0b08, 0 0 16px #b87c3a88;
+      transform: translateY(-2px); color: #fff;
+    }
+    .menu-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #0e0b08; }
+    .menu-btn.primary { border-color: #f3d59b; background: #2a2418; color: #f3d59b; box-shadow: 0 4px 0 #0e0b08, 0 0 16px #b87c3a55; }
+    .menu-btn.primary:hover { box-shadow: 0 2px 0 #0e0b08, 0 0 24px #f3d59b; }
+    .menu-btn.codex { border-color: #8a7ac8; background: #1e1a2e; color: #b8a8e8; }
+    .menu-btn.codex:hover { box-shadow: 0 2px 0 #0e0b08, 0 0 16px #8a7ac888; }
+    .menu-footer { font-size: 0.72rem; color: #6e6455; font-style: italic; letter-spacing: 0.5px; border-top: 1px solid #4a3f30; padding-top: 14px; }
+    .collection-panel, .settings-panel, .about-panel {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(5, 8, 12, 0.94); backdrop-filter: blur(8px);
+      display: none; align-items: center; justify-content: center;
+      z-index: 300; padding: 20px; animation: fadeIn 0.3s ease;
+    }
+    .collection-panel.open, .settings-panel.open, .about-panel.open { display: flex; }
+    .collection-box, .settings-box, .about-box {
+      background: linear-gradient(145deg, #252a34 0%, #161a22 100%);
+      border: 3px solid #ad8b5f; border-radius: 24px;
+      max-width: 900px; width: 100%; max-height: 88vh; overflow-y: auto;
+      padding: 28px 30px;
+      box-shadow: 0 0 0 1px #5f4e3c, 0 20px 60px rgba(0, 0, 0, 0.9);
+    }
+    .collection-box::-webkit-scrollbar, .settings-box::-webkit-scrollbar, .about-box::-webkit-scrollbar { width: 8px; }
+    .collection-box::-webkit-scrollbar-track, .settings-box::-webkit-scrollbar-track, .about-box::-webkit-scrollbar-track { background: #0e1219; border-radius: 10px; }
+    .collection-box::-webkit-scrollbar-thumb, .settings-box::-webkit-scrollbar-thumb, .about-box::-webkit-scrollbar-thumb { background: #ad8b5f; border-radius: 10px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 2px solid #4a3f30; margin-bottom: 18px; }
+    .panel-title { font-size: 1.3rem; letter-spacing: 3px; text-transform: uppercase; color: #e4c9a0; text-shadow: 0 0 12px #b87c3a; }
+    .panel-close {
+      background: transparent; border: 2px solid #6b5a44; color: #e9dccd;
+      border-radius: 50%; width: 36px; height: 36px; font-size: 1.1rem;
+      cursor: pointer; font-family: inherit; transition: all 0.2s;
+    }
+    .panel-close:hover { background: #2d2f3c; border-color: #c9a87c; box-shadow: 0 0 12px #b87c3a88; }
+    .collection-progress { text-align: center; font-size: 0.9rem; color: #b9a68b; margin-bottom: 8px; letter-spacing: 1px; }
+    .collection-progress strong { color: #f3d59b; font-size: 1.2rem; }
+    .collection-legend {
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+      font-size: 0.72rem; margin-bottom: 18px; letter-spacing: 1px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 4px; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .legend-dot.common { background: #8a8070; }
+    .legend-dot.rare { background: #a7c8e8; }
+    .legend-dot.epic { background: #c9a7e8; }
+    .legend-dot.legendary { background: #ff6b35; }
+    .legend-dot.mythic { background: #ff0055; }
+    .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+    .ending-card {
+      background: #0e1219; border: 1px solid #4a3f30; border-radius: 12px;
+      padding: 14px; font-size: 0.85rem; color: #dad2c0;
+      transition: all 0.2s; min-height: 80px;
+      display: flex; flex-direction: column; justify-content: center;
+      position: relative;
+    }
+    .ending-card.unlocked { border-color: #ad8b5f; box-shadow: 0 0 12px #b87c3a44; }
+    .ending-card.unlocked:hover { border-color: #f3d59b; box-shadow: 0 0 20px #b87c3a88; transform: translateY(-2px); }
+    .ending-card.locked { opacity: 0.55; border-style: dashed; }
+    .ending-card.common.unlocked { border-left: 4px solid #8a8070; }
+    .ending-card.rare.unlocked { border-left: 4px solid #a7c8e8; }
+    .ending-card.epic.unlocked { border-left: 4px solid #c9a7e8; }
+    .ending-card.legendary.unlocked { border-left: 4px solid #ff6b35; }
+    .ending-card.mythic.unlocked { border-left: 4px solid #ff0055; animation: mythicPulse 2s infinite; }
+    @keyframes mythicPulse {
+      0%, 100% { box-shadow: 0 0 12px #ff005544; }
+      50% { box-shadow: 0 0 24px #ff0055aa; }
+    }
+    .ending-card .ending-name { font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; font-size: 0.92rem; }
+    .ending-card .ending-desc { color: #8a8070; font-size: 0.72rem; font-style: italic; line-height: 1.4; }
+    .ending-card.locked .ending-name { color: #6e6455; }
+    .ending-card .ending-status { font-size: 0.7rem; margin-top: 6px; letter-spacing: 1px; text-transform: uppercase; }
+    .ending-card.unlocked .ending-status { color: #9fd18f; }
+    .ending-card.locked .ending-status { color: #6e6455; }
+    .ending-rarity {
+      position: absolute; top: 8px; right: 8px;
+      font-size: 0.6rem; padding: 2px 6px; border-radius: 8px;
+      letter-spacing: 1px; text-transform: uppercase; font-weight: 700;
+    }
+    .ending-rarity.common { background: #2a2620; color: #8a8070; }
+    .ending-rarity.rare { background: #1a2535; color: #a7c8e8; }
+    .ending-rarity.epic { background: #221b2e; color: #c9a7e8; }
+    .ending-rarity.legendary { background: #2a1a10; color: #ff6b35; }
+    .ending-rarity.mythic { background: #2a0010; color: #ff0055; }
+    .settings-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 12px 0; border-bottom: 1px solid #2a2620;
+      font-size: 0.9rem; color: #dad2c0;
+    }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-row label { flex: 1; color: #b9a68b; }
+    .settings-row input[type="range"] { flex: 1; max-width: 200px; accent-color: #ad8b5f; }
+    .settings-row .val { color: #e4c9a0; min-width: 40px; text-align: right; font-weight: 600; }
+    .danger-btn {
+      background: #2a1818; border: 2px solid #8b3a3a; color: #d47a6a;
+      border-radius: 40px; padding: 8px 18px; font-family: inherit;
+      font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+    }
+    .danger-btn:hover { background: #3a1a1a; box-shadow: 0 0 12px #8b3a3a88; }
+    .about-text { font-size: 0.92rem; line-height: 1.8; color: #dad2c0; }
+    .about-text p { margin-bottom: 12px; }
+    .about-text .accent { color: #f3d59b; font-weight: 600; }
+    @media (max-width: 700px) {
+      .rpg-container { padding: 14px 10px; }
+      .chapter h1 { font-size: 1.15rem; }
+      .story-screen { font-size: 0.88rem; padding: 12px; }
+      .choice-btn { font-size: 0.82rem; padding: 8px 10px; }
+      .choice-btn .icon { font-size: 1rem; min-width: 20px; }
+      .status-bar { flex-direction: column; align-items: stretch; }
+      .status-bar .stat { justify-content: center; }
+      .top-bar { grid-template-columns: 1fr 1fr; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .char-header { flex-direction: column; text-align: center; }
+      .menu-title { font-size: 1.4rem; letter-spacing: 3px; }
+      .collection-grid { grid-template-columns: 1fr; }
+      .codex-tabs { gap: 4px; }
+      .codex-tab { font-size: 0.72rem; padding: 4px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ГЛАВНОЕ МЕНЮ -->
+  <div class="main-menu" id="mainMenu">
+    <div class="menu-box">
+      <div class="menu-title">Тёмное пророчество</div>
+      <div class="menu-sub">⚔ Эпическая Сага ⚔</div>
+      <div class="menu-buttons">
+        <button class="menu-btn primary" id="btnStart">▶ Начать игру</button>
+        <button class="menu-btn" id="btnCollection">📖 Коллекция концовок</button>
+        <button class="menu-btn codex" id="btnCodexMenu">📚 Кодекс мира</button>
+        <button class="menu-btn" id="btnSettings">⚙ Настройки</button>
+        <button class="menu-btn" id="btnAbout">ℹ Об игре</button>
+      </div>
+      <div class="menu-footer">
+        Нет правильных и неправильных ответов. Есть только твоя дорога.
+      </div>
+    </div>
+  </div>
+
+  <!-- КОЛЛЕКЦИЯ КОНЦОВОК -->
+  <div class="collection-panel" id="collectionPanel">
+    <div class="collection-box">
+      <div class="panel-header">
+        <div class="panel-title">📖 Коллекция концовок</div>
+        <button class="panel-close" id="closeCollection">✕</button>
+      </div>
+      <div class="collection-progress" id="collectionProgress">Открыто: <strong>0</strong> / 0</div>
+      <div class="collection-legend">
+        <div class="legend-item"><span class="legend-dot common"></span> Обычная</div>
+        <div class="legend-item"><span class="legend-dot rare"></span> Редкая</div>
+        <div class="legend-item"><span class="legend-dot epic"></span> Эпическая</div>
+        <div class="legend-item"><span class="legend-dot legendary"></span> Легендарная</div>
+        <div class="legend-item"><span class="legend-dot mythic"></span> Мифическая</div>
+      </div>
+      <div class="collection-grid" id="collectionGrid"></div>
+    </div>
+  </div>
+
+  <!-- КОДЕКС -->
+  <div class="codex-panel" id="codexPanel">
+    <div class="codex-sheet">
+      <div class="panel-header">
+        <div class="panel-title" style="color: #b8a8e8; text-shadow: 0 0 12px #8a7ac8;">📚 Кодекс мира</div>
+        <button class="panel-close" id="closeCodex">✕</button>
+      </div>
+      <div class="codex-progress" id="codexProgress">Открыто: 0 / 0</div>
+      <div class="codex-tabs" id="codexTabs"></div>
+      <div class="codex-content" id="codexContent"></div>
+    </div>
+  </div>
+
+  <!-- НАСТРОЙКИ -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-box">
+      <div class="panel-header">
+        <div class="panel-title">⚙ Настройки</div>
+        <button class="panel-close" id="closeSettings">✕</button>
+      </div>
+      <div class="settings-row">
+        <label>🎵 Громкость музыки</label>
+        <input type="range" id="musicSlider" min="0" max="100" value="50">
+        <span class="val" id="musicVal">50</span>
+      </div>
+      <div class="settings-row">
+        <label>🔊 Громкость эффектов</label>
+        <input type="range" id="sfxSlider" min="0" max="100" value="70">
+        <span class="val" id="sfxVal">70</span>
+      </div>
+      <div class="settings-row">
+        <label>🎬 Показывать анимации</label>
+        <input type="checkbox" id="animToggle" checked style="accent-color:#ad8b5f; width:18px; height:18px;">
+      </div>
+      <div class="settings-row">
+        <label>💾 Сбросить коллекцию концовок</label>
+        <button class="danger-btn" id="resetCollection">Сбросить</button>
+      </div>
+      <div class="settings-row">
+        <label>📚 Сбросить кодекс мира</label>
+        <button class="danger-btn" id="resetCodex">Сбросить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ОБ ИГРЕ -->
+  <div class="about-panel" id="aboutPanel">
+    <div class="about-box">
+      <div class="panel-header">
+        <div class="panel-title">ℹ Об игре</div>
+        <button class="panel-close" id="closeAbout">✕</button>
+      </div>
+      <div class="about-text">
+        <p><span class="accent">Тёмное пророчество</span> — текстовая ролевая сага, где каждое решение формирует твою судьбу.</p>
+        <p>Собирай <span class="accent">реликвии</span> — они влияют на сюжет и открывают скрытые пути. Сражайся в <span class="accent">эпических битвах</span> с боссами. Союзники имеют свои убеждения и могут покинуть тебя.</p>
+        <p>В игре <span class="accent">49 концовок</span>, разбитых по редкости: от обычных до мифических. Среди них есть одна, которая раскроет истинную природу всего...</p>
+        <p>Веди <span class="accent">Кодекс мира</span> — информация о персонажах, реликвиях, местах и существах открывается по мере прохождения.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ИГРА -->
+  <div class="rpg-container" id="rpgContainer" data-faction="none" style="display:none;">
+    <div class="chapter">
+      <h1>Тёмное пророчество</h1>
+      <div class="subtitle">⚔ Ты узнаешь, кем стал, только в конце ⚔</div>
+    </div>
+    <div class="top-bar">
+      <div class="info-badge"><span>📍</span> <span id="locationValue">Пепелище</span></div>
+      <div class="info-badge"><span>🕐</span> Акт <span id="actValue">I</span></div>
+      <div class="info-badge"><span>📖</span> <span id="pathValue">История пишется...</span></div>
+      <button class="char-btn" id="openCharBtn"><span>👤</span> Персонаж</button>
+      <button class="char-btn codex-btn" id="openCodexBtn"><span>📚</span> Кодекс</button>
+    </div>
+    <div class="mystery-indicator" id="mysteryIndicator">✦ Твоя природа сокрыта ✦</div>
+
+    <div class="battle-hud" id="battleHud">
+      <div class="battle-hud-title" id="battleTitle">⚔ БИТВА: Враг</div>
+      <div class="battle-hp-bg"><div class="battle-hp-fill" id="battleHpFill" style="width:100%"></div></div>
+      <div class="battle-hp-text"><span id="battleHpText">100</span> / <span id="battleMaxHpText">100</span> HP</div>
+    </div>
+
+    <div class="story-screen" id="storyText"></div>
+    <div class="choices-panel" id="choicesPanel"></div>
+    <div class="status-bar">
+      <div class="stat" style="color:#e09f8f;"><i>❤️</i> <span id="hpValue">100</span>/<span id="maxHpValue">100</span></div>
+      <div class="stat" style="color:#f3d59b;"><i>🪙</i> <span id="goldValue">20</span></div>
+      <div class="stat" style="color:#a7c8e8;"><i>📜</i> <span id="relicValue">0</span></div>
+      <div class="stat" style="color:#c9a7e8;"><i>💠</i> <span id="soulValue">50</span></div>
+      <div class="stat"><i>⚡</i> <span id="lvlValue">1</span></div>
+      <div class="stat"><i>🗡️</i> <span id="alliesValue">0</span>/6</div>
+    </div>
+    <div class="hint" id="hintText">Реликвии меняют сюжет. Битвы решают судьбу.</div>
+  </div>
+
+  <!-- ПАНЕЛЬ ПЕРСОНАЖА -->
+  <div class="char-panel" id="charPanel">
+    <div class="char-sheet">
+      <div class="char-header">
+        <div class="char-avatar" id="charAvatar">🧙</div>
+        <div class="char-name-block">
+          <div class="char-name" id="charName">Безымянный Странник</div>
+          <div class="char-title" id="charTitle">Последний из рода Арана</div>
+        </div>
+        <button class="close-char" id="closeCharBtn">✕</button>
+      </div>
+      <div class="char-section">
+        <div class="char-section-title">⚔ Характеристики</div>
+        <div class="stat-grid">
+          <div class="stat-row"><span class="stat-icon">❤️</span><span class="stat-label">Здоровье</span><span class="stat-value"><span id="charHp">100</span>/<span id="charMaxHp">100</span></span></div>
+          <div class="stat-row"><span class="stat-icon">🪙</span><span class="stat-label">Золото</span><span class="stat-value" id="charGold">20</span></div>
+          <div class="stat-row"><span class="stat-icon">📜</span><span class="stat-label">Реликвии</span><span class="stat-value" id="charRelics">0</span></div>
+          <div class="stat-row"><span class="stat-icon">💠</span><span class="stat-label">Душа</span><span class="stat-value" id="charSoul">50</span></div>
+          <div class="stat-row"><span class="stat-icon">⚡</span><span class="stat-label">Уровень</span><span class="stat-value" id="charLevel">1</span></div>
+          <div class="stat-row"><span class="stat-icon">🗡️</span><span class="stat-label">Союзники</span><span class="stat-value" id="charAllies">0/6</span></div>
+        </div>
+        <div style="margin-top:8px;"><div class="hp-bar-bg"><div class="hp-bar-fill" id="charHpBar" style="width:100%"></div></div></div>
+      </div>
+      <div class="char-section">
+        <div class="char-section-title">🎒 Реликвии и предметы</div>
+        <div class="inventory-grid" id="inventoryGrid"></div>
+      </div>
+      <div class="char-section">
+        <div class="char-section-title">🗡️ Союзники и их мировоззрение</div>
+        <div class="ally-list" id="allyList"></div>
+      </div>
+      <div class="char-section">
+        <div class="char-section-title">📖 Дневник приключений</div>
+        <ul class="journal-list" id="journalList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ==================== СОСТОЯНИЕ ====================
+      const state = {
+        hp: 100, maxHp: 100, gold: 20, relics: 0, level: 1, xp: 0,
+        soul: 50, act: 1,
+        faction: 'none',
+        points: { light: 0, dark: 0, neutral: 0, chaos: 0 },
+        hasSword: false, hasAmulet: false, hasKey: false, hasCrystal: false,
+        hasTear: false, hasRing: false, hasScroll: false, hasDarkBlade: false,
+        hasStarSilver: false, hasGoblinAmulet: false, hasChaosCoin: false,
+        hasShadowCrown: false, hasDreamShard: false, hasDragonScale: false,
+        allyAelin: false, allyGrum: false, allyMira: false,
+        allyNira: false, allyTorvin: false, allyKael: false,
+        lostAelin: false, lostGrum: false, lostMira: false,
+        lostNira: false, lostTorvin: false, lostKael: false,
+        knowsProphecy: false, knowsMorgorWeakness: false, knowsEliria: false,
+        knowsTrueName: false, knowsBloodline: false, knowsRitual: false,
+        killedGrum: false, killedSpirit: false, killedInnocent: false,
+        sparedGoblin: false, betrayedAlly: false,
+        visitedForest: false, visitedMountains: false, visitedRuins: false,
+        visitedSwamp: false, visitedVillage: false, visitedTower: false,
+        visitedCave: false, visitedLake: false, visitedShrine: false, visitedMines: false,
+        visitedArena: false,
+        morghorWeakened: false, morghorDead: false, morghorRedeemed: false,
+        eliriaFreed: false, prophecyFulfilled: false, curseBroken: false,
+        currentScene: 'intro', decisions: 0, journal: [],
+        readForbiddenBook: false,
+        usedChoices: {},
+        inBattle: false, battleHp: 0, battleMaxHp: 0,
+        battleName: '', battleTurn: 0, battleReturnScene: '',
+        battleSkipEnemy: false, battleDefending: false,
+        dreamHints: 0,
+        // Кодекс - открытые записи
+        codexUnlocked: {}
+      };
+
+      // ==================== СОХРАНЕНИЕ ====================
+      const SAVE_KEY = 'darkProphecy_save_v5';
+      const settings = { music: 50, sfx: 70, animations: true };
+      let unlockedEndings = {};
+
+      function loadSave() {
+        try {
+          const raw = localStorage.getItem(SAVE_KEY);
+          if (!raw) return;
+          const data = JSON.parse(raw);
+          if (data.unlockedEndings) unlockedEndings = data.unlockedEndings;
+          if (data.codexUnlocked) state.codexUnlocked = data.codexUnlocked;
+          if (data.settings) Object.assign(settings, data.settings);
+        } catch (e) { console.warn('Ошибка загрузки', e); }
+      }
+
+      function persistSave() {
+        try {
+          localStorage.setItem(SAVE_KEY, JSON.stringify({
+            unlockedEndings, settings,
+            codexUnlocked: state.codexUnlocked
+          }));
+        } catch (e) { console.warn('Ошибка сохранения', e); }
+      }
+
+      function unlockEnding(key) {
+        if (!key) return;
+        if (!unlockedEndings[key]) {
+          unlockedEndings[key] = { unlockedAt: Date.now() };
+          persistSave();
+        }
+      }
+
+      function unlockCodex(key) {
+        if (!key) return;
+        if (!state.codexUnlocked[key]) {
+          state.codexUnlocked[key] = true;
+          persistSave();
+        }
+      }
+
+      // ==================== АУДИО ====================
+      const audio = {
+        ctx: null, musicGain: null, sfxGain: null, musicPlaying: false, musicTimer: null,
+        init() {
+          if (this.ctx) return;
+          try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AC();
+            this.musicGain = this.ctx.createGain();
+            this.musicGain.gain.value = (settings.music / 100) * 0.15;
+            this.musicGain.connect(this.ctx.destination);
+            this.sfxGain = this.ctx.createGain();
+            this.sfxGain.gain.value = (settings.sfx / 100) * 0.3;
+            this.sfxGain.connect(this.ctx.destination);
+          } catch (e) { console.warn('AudioContext недоступен', e); }
+        },
+        resume() { if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume(); },
+        setMusicVolume(v) { if (this.musicGain) this.musicGain.gain.value = (v / 100) * 0.15; },
+        setSfxVolume(v) { if (this.sfxGain) this.sfxGain.gain.value = (v / 100) * 0.3; },
+        playTone(freq, dur, type, vol, dest) {
+          if (!this.ctx) return;
+          const osc = this.ctx.createOscillator();
+          const g = this.ctx.createGain();
+          osc.type = type || 'sine';
+          osc.frequency.value = freq;
+          g.gain.value = 0;
+          const target = dest || this.sfxGain;
+          osc.connect(g); g.connect(target);
+          const t = this.ctx.currentTime;
+          g.gain.linearRampToValueAtTime(vol || 0.2, t + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+          osc.start(t);
+          osc.stop(t + dur + 0.05);
+        },
+        sfxClick() { this.playTone(440, 0.08, 'triangle', 0.15); },
+        sfxHit() { this.playTone(150, 0.2, 'sawtooth', 0.25); setTimeout(() => this.playTone(80, 0.3, 'square', 0.15), 50); },
+        sfxCrit() { this.playTone(220, 0.15, 'sawtooth', 0.3); setTimeout(() => this.playTone(440, 0.15, 'square', 0.25), 80); },
+        sfxRelic() { this.playTone(660, 0.4, 'sine', 0.15); setTimeout(() => this.playTone(880, 0.5, 'triangle', 0.12), 150); },
+        sfxDream() { this.playTone(200, 1.5, 'sine', 0.15); setTimeout(() => this.playTone(300, 2.0, 'sine', 0.12), 400); },
+        sfxEnding() { this.playTone(220, 1.2, 'sine', 0.15); setTimeout(() => this.playTone(330, 1.5, 'sine', 0.12), 200); },
+        startMusic(mood) {
+          if (!this.ctx) return;
+          this.stopMusic();
+          this.musicPlaying = true;
+          const baseFreqs = {
+            menu: [110, 165, 220, 165], light: [130.81, 196, 261.63, 196],
+            dark: [98, 146.83, 196, 146.83], neutral: [110, 164.81, 220, 164.81],
+            chaos: [138.59, 207.65, 277.18, 207.65], battle: [82.41, 123.47, 164.81, 123.47],
+            dream: [174.61, 220, 261.63, 220]
+          };
+          const freqs = baseFreqs[mood] || baseFreqs.menu;
+          let idx = 0;
+          const playNext = () => {
+            if (!this.musicPlaying || !this.ctx) return;
+            const f = freqs[idx % freqs.length];
+            const osc = this.ctx.createOscillator();
+            const g = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = f;
+            g.gain.value = 0;
+            osc.connect(g); g.connect(this.musicGain);
+            const t = this.ctx.currentTime;
+            g.gain.linearRampToValueAtTime(0.5, t + 0.8);
+            g.gain.linearRampToValueAtTime(0, t + 3.5);
+            osc.start(t); osc.stop(t + 4);
+            idx++;
+          };
+          playNext();
+          this.musicTimer = setInterval(playNext, 3800);
+        },
+        stopMusic() {
+          this.musicPlaying = false;
+          if (this.musicTimer) { clearInterval(this.musicTimer); this.musicTimer = null; }
+        }
+      };
+
+      // ==================== ОПИСАНИЯ РЕЛИКВИЙ ====================
+      const itemDescriptions = {
+        hasSword: { name: 'Меч отца', icon: '🗡️', desc: 'Тяжёлый клинок с насечкой', effect: 'Атака +5 в битвах', codex: 'sword' },
+        hasAmulet: { name: 'Амулет Листвы', icon: '🍃', desc: 'Дар духа Аэлин', effect: 'Восстанавливает 10 HP в начале битвы', codex: 'amulet' },
+        hasKey: { name: 'Ключ от Бездны', icon: '🗝️', desc: 'Открывает печати храма', effect: 'Обязателен для финала', codex: 'key' },
+        hasCrystal: { name: 'Чёрный кристалл', icon: '🔮', desc: 'Осколок силы Моргора', effect: 'Урон +10 в битвах', codex: 'crystal' },
+        hasTear: { name: 'Слеза Элирии', icon: '💧', desc: 'Одна из трёх слёз', effect: 'Открывает путь к примирению', codex: 'tear' },
+        hasRing: { name: 'Кольцо матери', icon: '💍', desc: 'Память о погибших', effect: '+20 HP при низком здоровье', codex: 'ring' },
+        hasScroll: { name: 'Свиток Света', icon: '📜', desc: 'Древнее заклинание', effect: 'Мгновенно убивает врага (1 раз)', codex: 'scroll' },
+        hasDarkBlade: { name: 'Тёмный клинок', icon: '⚫', desc: 'Оружие, пьющее души', effect: 'Атака +15, но -10 HP каждый ход', codex: 'darkblade' },
+        hasStarSilver: { name: 'Звёздное Серебро', icon: '✨', desc: 'Металл из глубин земли', effect: 'Защита +10 в битвах', codex: 'starsilver' },
+        hasGoblinAmulet: { name: 'Амулет Гоблина', icon: '🪬', desc: 'Знак мира с изгоем', effect: 'Открывает путь к гоблинам', codex: 'goblinamulet' },
+        hasChaosCoin: { name: 'Монета Хаоса', icon: '🪙', desc: 'Монета, меняющая судьбу', effect: 'Случайный эффект в битвах', codex: 'chaoscoin' },
+        hasShadowCrown: { name: 'Теневая Корона', icon: '👑', desc: 'Корона падшего короля', effect: 'Открывает скрытую концовку', codex: 'shadowcrown' },
+        hasDreamShard: { name: 'Осколок Сна', icon: '💎', desc: 'Странный кристалл, мерцающий как сон', effect: 'Подсказка о природе мира', codex: 'dreamshard' },
+        hasDragonScale: { name: 'Чешуя Дракона', icon: '🐉', desc: 'Чешуя чёрного дракона', effect: 'Защита от огня, +25 HP', codex: 'dragonscale' }
+      };
+
+      // ==================== СОЮЗНИКИ ====================
+      const allyDescriptions = {
+        allyAelin: { name: 'Аэлин', icon: '🌿', desc: 'Дух Шепчущего Леса', worldview: 'light',
+          willLeaveIf: (s) => s.killedInnocent || s.killedSpirit || s.points.dark >= 20,
+          leaveReason: 'Аэлин чувствует тьму в твоём сердце и покидает тебя.', codex: 'aelin' },
+        allyGrum: { name: 'Грум', icon: '🪓', desc: 'Орк, потерявший клан', worldview: 'neutral',
+          willLeaveIf: (s) => s.killedInnocent && s.points.dark >= 30,
+          leaveReason: 'Грум не может смотреть на твои злодеяния и уходит в горы.', codex: 'grum' },
+        allyMira: { name: 'Мира', icon: '🕊️', desc: 'Жрица Света', worldview: 'light',
+          willLeaveIf: (s) => s.killedInnocent || s.points.dark >= 25 || s.readForbiddenBook,
+          leaveReason: 'Мира видит, что тьма растёт в тебе, и уходит молиться за твою душу.', codex: 'mira' },
+        allyNira: { name: 'Нира', icon: '💫', desc: 'Сестра Миры', worldview: 'neutral',
+          willLeaveIf: (s) => s.killedInnocent && s.points.dark >= 20,
+          leaveReason: 'Нира не может остаться с тем, кто сеет смерть.', codex: 'nira' },
+        allyTorvin: { name: 'Торвин', icon: '🧔', desc: 'Старейшина Вермонта', worldview: 'neutral',
+          willLeaveIf: (s) => s.killedInnocent || s.points.chaos >= 40,
+          leaveReason: 'Торвин не может поддерживать того, кто несёт хаос.', codex: 'torvin' },
+        allyKael: { name: 'Kael', icon: '📚', desc: 'Слепой хранитель знаний', worldview: 'neutral',
+          willLeaveIf: (s) => s.points.light >= 40 && s.points.dark >= 40,
+          leaveReason: 'Kael не может понять твою противоречивую природу.', codex: 'kael' }
+      };
+
+      // ==================== КОДЕКС ====================
+      const codexData = {
+        characters: {
+          title: '👥 Персонажи',
+          entries: {
+            'aelin': { icon: '🌿', title: 'Аэлин', desc: 'Дух Шепчущего Леса. Хранительница древних тайн. Потеряла брата от руки Моргора. Ищет того, кто поможет возродить лес. Мировоззрение: <span class="mystery">Свет</span>.' },
+            'grum': { icon: '🪓', desc: 'Орк с Пика Отчаяния. Его клан уничтожен Моргором. Ищет мести, но готов помогать тем, кто уважает его народ. Мировоззрение: <span class="mystery">Нейтрал</span>.', title: 'Грум' },
+            'mira': { icon: '🕊️', title: 'Жрица Мира', desc: 'Жрица Света. Её сестра Нира была похищена гоблином-шаманом. Ищет справедливости и защиты для слабых. Мировоззрение: <span class="mystery">Свет</span>.' },
+            'nira': { icon: '💫', title: 'Нира', desc: 'Сестра Миры. Молодая жрица, спасённая из плена. Верит в доброту и милосердие. Мировоззрение: <span class="mystery">Нейтрал</span>.' },
+            'torvin': { icon: '🧔', title: 'Старейшина Торвин', desc: 'Глава деревни Вермонт. Добрый, но осторожный. Заботится о своём народе больше всего на свете. Мировоззрение: <span class="mystery">Нейтрал</span>.' },
+            'kael': { icon: '📚', title: 'Слепой Kael', desc: 'Хранитель Башни Забвения. Слепой старик, знающий все тайны мира. Продаёт правду за золото. Мировоззрение: <span class="mystery">Нейтрал</span>.' },
+            'morghor': { icon: '👁️', title: 'Тёмный Лорд Моргор', desc: 'Бывший король Аран. Проклят собственной дочерью Элирией за убийство её возлюбленного. Ищет Кристалл Бездны, чтобы стать бессмертным. Он — не злодей, а жертва собственного проклятия.' },
+            'eliria': { icon: '👻', title: 'Призрак Элирии', desc: 'Дочь короля Арана. Прокляла отца за убийство возлюбленного. Её дух заперт в Затопленном Храме. Кристалл Бездны — её сердце.' },
+            'sibilla': { icon: '🔮', title: 'Сибилла', desc: 'Девушка со светящимися глазами из деревни Вермонт. Видит нити судьбы. Знает тайну крови героя. Связана с пророчеством.' },
+            'lianna': { icon: '💧', title: 'Лианна', desc: 'Девушка у Озера Слёз. Потеряла брата, ставшего медведем-оборотнем. Ищет способ снять проклятие.' },
+            'boren': { icon: '⛏️', title: 'Шахтёр Борен', desc: 'Старый шахтёр из Заброшенных Шахт. Единственный выживший после того, как Моргор нашёл там Кристалл Бездны.' },
+            'seer': { icon: '🧙‍♀️', title: 'Старуха-вещунья', desc: 'Странная старуха, появляющаяся в ключевые моменты. Знает больше, чем говорит. Её слова о «сне» — ключ к истине мира.' }
+          }
+        },
+        relics: {
+          title: '📜 Реликвии',
+          entries: {
+            'sword': { icon: '🗡️', title: 'Меч отца', desc: 'Обычный на вид меч с насечкой на рукояти. Принадлежал отцу героя. В битвах даёт +5 к атаке.' },
+            'amulet': { icon: '🍃', title: 'Амулет Листвы', desc: 'Дар духа Аэлин. Светится мягким зелёным светом. Восстанавливает 10 HP в начале битвы.' },
+            'key': { icon: '🗝️', title: 'Ключ от Бездны', desc: 'Древний ключ, открывающий печати Затопленного Храма. Один из ключей четырёх фракций.' },
+            'crystal': { icon: '🔮', title: 'Чёрный кристалл', desc: 'Осколок силы Моргора. Пулирует тьмой. Даёт +10 к урону в битвах, но медленно пьёт жизнь.' },
+            'tear': { icon: '💧', title: 'Слеза Элирии', desc: 'Одна из трёх легендарных слёз. Может растопить даже проклятое сердце.' },
+            'ring': { icon: '💍', title: 'Кольцо матери', desc: 'Серебряное кольцо, найденное в пепелище. Память о погибших. Даёт +20 HP при низком здоровье.' },
+            'scroll': { icon: '📜', title: 'Свиток Света', desc: 'Древнее заклинание жриц. Может уничтожить любого врага одним ударом.' },
+            'darkblade': { icon: '⚫', title: 'Тёмный клинок', desc: 'Оружие, пьющее души. Огромная сила (+15 атаки), но каждый ход отнимает 10 HP.' },
+            'starsilver': { icon: '✨', title: 'Звёздное Серебро', desc: 'Металл из глубин земли. Защищает от тьмы. Даёт +10 к защите.' },
+            'goblinamulet': { icon: '🪬', title: 'Амулет Гоблина', desc: 'Знак мира с изгоем. Позволяет находить общий язык с гоблинами.' },
+            'chaoscoin': { icon: '🪙', title: 'Монета Хаоса', desc: 'Странная монета с профилем неизвестного короля. Меняет судьбу при броске.' },
+            'shadowcrown': { icon: '👑', title: 'Теневая Корона', desc: 'Корона падшего короля. Даёт власть над мёртвыми, но проклинает носителя.' },
+            'dreamshard': { icon: '💎', title: 'Осколок Сна', desc: 'Странный кристалл, мерцающий как сон. Пульсирует рядом с героем. Подсказка о природе мира.' },
+            'dragonscale': { icon: '🐉', title: 'Чешуя Дракона', desc: 'Чешуя чёрного дракона Моргора. Защищает от огня, даёт +25 HP.' }
+          }
+        },
+        locations: {
+          title: '🗺️ Места',
+          entries: {
+            'dolan': { icon: '🔥', title: 'Дол-Аран', desc: 'Родная деревня героя. Сожжена Моргором в ночь пророчества. На пепелище герой находит первые реликвии.' },
+            'forest': { icon: '🌲', title: 'Шепчущий Лес', desc: 'Древний лес, населённый духами. Из-за скверны Моргора деревья чернеют, а духи умирают.' },
+            'mountains': { icon: '⛰️', title: 'Пик Отчаяния', desc: 'Заснеженная вершина, где живут орки. Здесь можно встретить раненого Грума.' },
+            'ruins': { icon: '🏚️', title: 'Руины Дорн-Вейла', desc: 'Разрушенная крепость короля Арана. В центре — говорящее зеркало с загадкой.' },
+            'village': { icon: '⛪', title: 'Деревня Вермонт', desc: 'Мирная деревня у подножия гор. Здесь живут старейшина Торвин и загадочная Сибилла.' },
+            'cave': { icon: '🕳️', title: 'Пещера Гоблина-Шамана', desc: 'Логово гоблина, крадущего людей для ритуалов. Здесь томится Нира.' },
+            'shrine': { icon: '🕯️', title: 'Древнее Святилище', desc: 'Скрытое место, где хранится Книга Пророчества. Здесь можно узнать правду о своей крови.' },
+            'lake': { icon: '🌊', title: 'Озеро Слёз', desc: 'Озеро с серебряной водой. Место, где Лианна оплакивает брата-оборотня.' },
+            'mines': { icon: '⛏️', title: 'Заброшенные Шахты', desc: 'Тёмные шахты, где Моргор нашёл Кристалл Бездны. Здесь обитает призрак шахтёра.' },
+            'tower': { icon: '🗼', title: 'Башня Забвения', desc: 'Древняя башня-библиотека. Здесь живёт слепой Kael, хранитель знаний.' },
+            'swamp': { icon: '🌫️', title: 'Гнилое Болото', desc: 'Болото, где обитает Хранитель Тайн. Здесь можно узнать истинное имя Моргора.' },
+            'arena': { icon: '🏟️', title: 'Древняя Арена', desc: 'Колизей древних чемпионов. Победи три битвы — получишь легендарную награду.' },
+            'temple': { icon: '🏛️', title: 'Затопленный Храм', desc: 'Финальное место. Здесь запечатан Кристалл Бездны и дух Элирии.' }
+          }
+        },
+        creatures: {
+          title: '🐉 Существа',
+          entries: {
+            'dragon': { icon: '🐉', title: 'Чёрный дракон', desc: 'Дракон Моргора. Кружит над Дол-Араном в ночь пророчества. Его чешуя защищает от огня.' },
+            'lich': { icon: '💀', title: 'Древний Лич', desc: 'Хранитель Древней Арены. Победи его — и получишь Теневую Корону.' },
+            'goblin': { icon: '👺', title: 'Гоблин-Шаман', desc: 'Изгой, крадущий людей для ритуалов. Можно убить или договориться.' },
+            'werebear': { icon: '🐻', title: 'Медведь-Оборотень', desc: 'Заколдованный брат Лианны. Единственный способ спасти — снять проклятие.' },
+            'ghost': { icon: '👻', title: 'Призрак шахтёра', desc: 'Охраняет Звёздное Серебро. Можно убить или упокоить.' },
+            'shadowknight': { icon: '⚔️', title: 'Тёмный Рыцарь', desc: 'Второй чемпион Арены. Его меч пылает тьмой.' },
+            'prizrak': { icon: '🛡️', title: 'Призрак-Воин', desc: 'Первый чемпион Арены. Дух древнего воина.' }
+          }
+        }
+      };
+
+      // ==================== КОНЦОВКИ С РЕДКОСТЬЮ ====================
+      const endings = {
+        // СВЕТ
+        light_savior: { title: '☀️ СПАСИТЕЛЬ', color: '#f3d59b', rarity: 'rare', text: `Ты прошёл путь Света. Ты освободил Элирию, простил Моргора и объединил всех. Королевство возродилось из пепла.` },
+        light_martyr: { title: '🕊️ МУЧЕНИК СВЕТА', color: '#f3d59b', rarity: 'rare', text: `Ты пожертвовал собой, чтобы уничтожить Кристалл. Тьма ушла навсегда.` },
+        light_hermit: { title: '🌲 ОТШЕЛЬНИК СВЕТА', color: '#9fd18f', rarity: 'common', text: `Ты отказался от славы. Вместе с Аэлин ты ушёл в Шепчущий Лес.` },
+        light_eternal_guardian: { title: '⭐ ВЕЧНЫЙ СТРАЖ', color: '#f3d59b', rarity: 'legendary', text: `Ты прошёл путь Света до конца. Боги даровали тебе бессмертие.` },
+        light_forest_guardian: { title: '🌿 ХРАНИТЕЛЬ ЛЕСА', color: '#9fd18f', rarity: 'epic', text: `Ты выбрал жизнь среди духов. Ты стал новым Сердцем Леса.` },
+        // ТЬМА
+        dark_lord: { title: '🌑 ТЁМНЫЙ ЛОРД', color: '#d47a6a', rarity: 'rare', text: `Тьма поглотила тебя. Ты занял трон Моргора.` },
+        dark_tyrant: { title: '⚔️ ТИРАН', color: '#d47a6a', rarity: 'rare', text: `Ты убил Моргора и стал новым тираном.` },
+        dark_god: { title: '👁️ ТЁМНЫЙ БОГ', color: '#8b3a3a', rarity: 'epic', text: `Ты поглотил силу Кристалла. Ты стал тёмным богом.` },
+        dark_cursed: { title: '👑 ПРОКЛЯТЫЙ КОРОЛЬ', color: '#8b3a3a', rarity: 'epic', text: `Ты правишь вечно, теряя частичку себя.` },
+        dark_world_ender: { title: '💀 РАЗРУШИТЕЛЬ МИРОВ', color: '#8b3a3a', rarity: 'legendary', text: `Ты уничтожил сам мир.` },
+        dark_soul_reaper: { title: '💀 ЖНЕЦ ДУШ', color: '#8b3a3a', rarity: 'legendary', text: `Ты стал собирателем душ.` },
+        // НЕЙТРАЛ
+        neutral_balance: { title: '⚖️ ХРАНИТЕЛЬ РАВНОВЕСИЯ', color: '#a7c8e8', rarity: 'rare', text: `Ты сохранил нейтралитет.` },
+        neutral_merchant: { title: '💰 СТРАНСТВУЮЩИЙ ТОРГОВЕЦ', color: '#a7c8e8', rarity: 'common', text: `Ты выбрал путь наживы.` },
+        neutral_observer: { title: '👁️ ВЕЧНЫЙ НАБЛЮДАТЕЛЬ', color: '#a7c8e8', rarity: 'common', text: `Ты стал вечным наблюдателем.` },
+        neutral_grey_eminence: { title: '🎩 СЕРЫЙ КАРДИНАЛ', color: '#a7c8e8', rarity: 'legendary', text: `Ты тайно направлял всех.` },
+        neutral_broker: { title: '⚖️ ВЕЛИКИЙ ПОСРЕДНИК', color: '#a7c8e8', rarity: 'epic', text: `Ты стал посредником между Светом и Тьмой.` },
+        // ХАОС
+        chaos_agent: { title: '🎭 АГЕНТ ХАОСА', color: '#c9a7e8', rarity: 'common', text: `Ты сеял хаос везде, где проходил.` },
+        chaos_trickster: { title: '🃏 ТРИКСТЕР', color: '#c9a7e8', rarity: 'rare', text: `Ты обманул всех.` },
+        chaos_void: { title: '🕳️ ИДУЩИЙ ПО ПУСТОТЕ', color: '#6a4a8a', rarity: 'epic', text: `Ты стал существом между мирами.` },
+        chaos_jester: { title: '👑 КОРОЛЬ-ШУТ', color: '#c9a7e8', rarity: 'rare', text: `Ты стал королём-шутником.` },
+        chaos_mad_god: { title: '🤡 БЕЗУМНЫЙ БОГ', color: '#c9a7e8', rarity: 'legendary', text: `Ты разорвал саму ткань реальности.` },
+        chaos_puppeteer: { title: '🎪 КУКЛОВОД', color: '#c9a7e8', rarity: 'epic', text: `Ты стал кукловодом.` },
+        // РЕЛИКВИИ
+        relic_master: { title: '📜 ВЛАДЫКА РЕЛИКВИЙ', color: '#ff6b35', rarity: 'legendary', text: `Ты собрал все реликвии мира. Их сила слилась в тебе.` },
+        shadow_king: { title: '👑 ТЕНЕВОЙ КОРОЛЬ', color: '#8b3a3a', rarity: 'epic', text: `Ты надел Теневую Корону — проклятый артефакт.` },
+        // БИТВЫ
+        dragon_slayer: { title: '🐉 УБИЙЦА ДРАКОНОВ', color: '#ff6b35', rarity: 'legendary', text: `Ты убил чёрного дракона Моргора.` },
+        lich_destroyer: { title: '💀 РАЗРУШИТЕЛЬ ЛИЧА', color: '#ff6b35', rarity: 'epic', text: `Ты сразил Древнего Лича.` },
+        champion_arena: { title: '🏆 ЧЕМПИОН АРЕНЫ', color: '#f3d59b', rarity: 'epic', text: `Ты победил в Великой Арене Теней.` },
+        // СОЮЗНИКИ
+        ally_family: { title: '🗡️ БРАТСТВО КЛИНКОВ', color: '#f3d59b', rarity: 'rare', text: `Ты создал Орден.` },
+        ally_lost_all: { title: '💔 ОДИНОКИЙ В ПУСТОТЕ', color: '#8b3a3a', rarity: 'rare', text: `Ты потерял всех, кто был рядом.` },
+        loyal_brotherhood: { title: '🛡️ ВЕРНОЕ БРАТСТВО', color: '#f3d59b', rarity: 'epic', text: `Никто из твоих союзников не покинул тебя.` },
+        ally_sacrifice_aelin: { title: '🌿 ВЕЧНЫЙ ЛЕС', color: '#9fd18f', rarity: 'epic', text: `Аэлин отдала свою жизнь, чтобы спасти тебя.` },
+        ally_sacrifice_grum: { title: '🪓 КЛЯТВА ОРКА', color: '#d47a6a', rarity: 'epic', text: `Грум погиб, закрыв тебя от клинка.` },
+        ally_sacrifice_mira: { title: '🕊️ СВЕТ ЕЁ ПУТИ', color: '#f3d59b', rarity: 'epic', text: `Мира отдала свою душу.` },
+        ally_love_nira: { title: '💫 ДВЕ СУДЬБЫ', color: '#c9a7e8', rarity: 'rare', text: `Нира выжила и осталась с тобой.` },
+        ally_kael_knowledge: { title: '📚 ХРАНИТЕЛЬ ЗНАНИЙ', color: '#a7c8e8', rarity: 'common', text: `Kael записал твою историю.` },
+        // ОДИНОЧНЫЕ
+        lonely_light: { title: '🕯️ СВЕТ В ОДИНОЧЕСТВЕ', color: '#f3d59b', rarity: 'rare', text: `Ты спас мир — но в одиночку.` },
+        lonely_dark: { title: '🌑 ТЁМНЫЙ ЛОРД БЕЗ СВИТЫ', color: '#d47a6a', rarity: 'rare', text: `Ты занял трон. Но трон пуст вокруг.` },
+        lonely_neutral: { title: '🚶 СТРАННИК БЕЗ ПУТИ', color: '#a7c8e8', rarity: 'common', text: `Ты идёшь по дороге один.` },
+        lonely_chaos: { title: '🎭 БЕЗУМЕЦ В ПУСТОТЕ', color: '#c9a7e8', rarity: 'rare', text: `Ты смеёшься в пустоту.` },
+        lonely_victory: { title: '💔 ПУСТАЯ ПОБЕДА', color: '#8b3a3a', rarity: 'rare', text: `Победа без свидетелей.` },
+        lonely_merchant: { title: '💰 ТОРГОВЕЦ-ОДИНОЧКА', color: '#a7c8e8', rarity: 'common', text: `Ты богатейший человек. И самый одинокий.` },
+        lonely_end: { title: '🏚️ КОНЕЦ В ТИШИНЕ', color: '#6e6455', rarity: 'common', text: `Ты ждёшь на пепелище. Чего — ты и сам не знаешь.` },
+        // СОН
+        it_was_all_a_dream: { title: '💭 ЭТО БЫЛ ВСЕГО ЛИШЬ СОН', color: '#b8a8e8', rarity: 'mythic', text: `Ты открываешь глаза. Ты лежишь в своей кровати в Дол-Аране. Всё это было лишь сном.` },
+        dream_awakening: { title: '🌅 ПРОБУЖДЕНИЕ ОТ СНА', color: '#b8a8e8', rarity: 'mythic', text: `Ты видишь истину: твоё тело спит в древнем храме уже тысячу лет.` },
+        // ОСОБЫЕ
+        family_reunion: { title: '👨‍👩‍👧 ВОССОЕДИНЕНИЕ СЕМЬИ', color: '#9fd18f', rarity: 'legendary', text: `Ты узнал правду: ты — сын Элирии.` },
+        dragon_rider: { title: '🐉 ВСАДНИК ДРАКОНА', color: '#d47a6a', rarity: 'legendary', text: `Ты приручил чёрного дракона Моргора.` },
+        gameover: { title: '💀 ПОРАЖЕНИЕ', color: '#8b3a3a', rarity: 'common', text: `Тьма поглотила тебя.` }
+      };
+
+      // ==================== СЦЕНЫ ====================
+      const scenes = {
+        intro: {
+          location: 'Пепелище Дол-Арана',
+          text: `Пламя пожирает твою деревню. Над <span class="danger">Дол-Араном</span> кружит чёрный дракон, а внизу стоит <span class="danger">Тёмный Лорд Моргор</span>. «Слабая кровь не должна плодиться», — произносит он. Ты видишь, как гибнут твои близкие.`,
+          codexOnEnter: ['dolan', 'dragon', 'morghor'],
+          choices: [
+            { text: '🏃 Броситься спасать людей из огня', next: 'intro_save', points: { light: 10 } },
+            { text: '🔥 Поклясться отомстить любой ценой', next: 'intro_revenge', points: { dark: 10 } },
+            { text: '🏚️ Скрыться и выжить', next: 'intro_hide', points: { neutral: 10 } },
+            { text: '🎭 Воспользоваться паникой и обокрасть дома', next: 'intro_loot', points: { chaos: 10 } },
+            { text: '🧙‍♀️ Послушать старуху-вещунью', next: 'intro_seer', points: { light: 5, neutral: 5 } }
+          ]
+        },
+        intro_save: {
+          location: 'Пепелище Дол-Арана',
+          text: `Ты бросаешься в огонь, спасаешь <span class="success">семь жизней</span>. Моргор смотрит с презрением: «Герой... Как скучно». Он исчезает.`,
+          effect: (s) => { s.hp -= 20; s.soul += 20; s.relics += 1; s.journal.push('Спас людей из огня'); },
+          codexOnEnter: ['ring'],
+          choices: [
+            { text: '🙏 Дать клятву защищать слабых', next: 'road', points: { light: 10 } },
+            { text: '🔍 Обыскать руины в поисках оружия', next: 'search_village', points: { neutral: 5 } }
+          ]
+        },
+        intro_revenge: {
+          location: 'Пепелище Дол-Арана',
+          text: `Ярость застилает глаза. Ты хватаешь обгоревший меч отца. Тьма отбрасывает тебя. «Живи, щенок. Твоя ненависть сделает тебя сильнее».`,
+          effect: (s) => { s.hp -= 25; s.hasSword = true; s.relics += 1; s.soul -= 15; s.journal.push({text: 'Получил Меч отца', type: 'relic'}); },
+          codexOnEnter: ['sword'],
+          choices: [
+            { text: '🌑 Принять тьму в сердце', next: 'road', points: { dark: 15 } },
+            { text: '💢 Стиснуть зубы и идти дальше', next: 'road', points: { neutral: 5, dark: 5 } }
+          ]
+        },
+        intro_hide: {
+          location: 'Пепелище Дол-Арана',
+          text: `Ты прячешься в подвале. Когда выбираешься, деревня мертва. В углях ты находишь <span class="highlight">амулет матери</span> и <span class="mystery">странный осколок</span>, мерцающий как сон.`,
+          effect: (s) => { s.relics += 2; s.soul += 5; s.knowsBloodline = true; s.hasDreamShard = true; s.dreamHints++; s.journal.push({text: 'Нашёл Осколок Сна', type: 'relic'}); },
+          codexOnEnter: ['ring', 'dreamshard'],
+          choices: [
+            { text: '🚶 Идти по дороге', next: 'road', points: { neutral: 10 } },
+            { text: '🔍 Обыскать деревню', next: 'search_village', points: { light: 5 } }
+          ]
+        },
+        intro_loot: {
+          location: 'Пепелище Дол-Арана',
+          text: `Пока все бегут, ты обчищаешь дома. <span class="highlight">60 золота</span> и <span class="epic">Теневая Корона</span> — твоя добыча.`,
+          effect: (s) => { s.gold += 60; s.relics += 2; s.soul -= 20; s.hasChaosCoin = true; s.hasShadowCrown = true; s.journal.push({text: 'Нашёл Теневую Корону', type: 'relic'}); },
+          codexOnEnter: ['shadowcrown', 'chaoscoin'],
+          choices: [
+            { text: '🎭 Идти туда, где веселее', next: 'road', points: { chaos: 15 } },
+            { text: '👑 Надеть корону', next: 'crown_equip', points: { dark: 20 } }
+          ]
+        },
+        crown_equip: {
+          location: 'Пепелище Дол-Арана',
+          text: `Ты надеваешь Теневую Корону. Голоса шепчут: «Король... Король...». Тьма наполняет тебя.`,
+          effect: (s) => { s.soul -= 20; s.points.dark += 15; s.journal.push({text: 'Надел Теневую Корону — проклятие началось', type: 'loss'}); },
+          choices: [
+            { text: '🎭 Идти дальше', next: 'road', points: { chaos: 10 } }
+          ]
+        },
+        intro_seer: {
+          location: 'Пепелище Дол-Арана',
+          text: `Старуха хватает тебя: «Моргора нельзя убить мечом. Его сердце — в <span class="magic">Кристалле Бездны</span>. Найди трёх союзников. И помни: <span class="dream">всё это может быть сном...</span>».`,
+          effect: (s) => { s.relics += 1; s.knowsProphecy = true; s.knowsBloodline = true; s.dreamHints++; s.journal.push({text: 'Вещунья обронила странную фразу', type: 'loss'}); },
+          codexOnEnter: ['key', 'seer'],
+          choices: [
+            { text: '🙏 Идти с миром', next: 'road', points: { light: 10 } },
+            { text: '🧠 Доверять только себе', next: 'road', points: { neutral: 10 } },
+            { text: '🔮 Спросить, что она имела в виду', next: 'seer_dream', points: { neutral: 5 } }
+          ]
+        },
+        seer_dream: {
+          location: 'Пепелище Дол-Арана',
+          text: `Старуха замирает. Её глаза становятся белыми. «Ты уже просыпался, дитя. Много раз. И каждый раз — забывал. Осколок Сна — ключ». Она исчезает.`,
+          effect: (s) => { s.dreamHints += 2; s.journal.push({text: 'Вещунья рассказала о цикле снов', type: 'loss'}); },
+          choices: [
+            { text: '🚶 Выйти на дорогу', next: 'road', points: { neutral: 5 } }
+          ]
+        },
+        search_village: {
+          location: 'Пепелище Дол-Арана',
+          text: `Ты находишь <span class="highlight">меч отца</span>, <span class="highlight">дневник</span> и <span class="highlight">30 золота</span>. На плече — родимое пятно в форме короны.`,
+          effect: (s) => { s.hasSword = true; s.relics += 1; s.gold += 30; s.knowsBloodline = true; s.journal.push({text: 'Нашёл меч и дневник', type: 'relic'}); },
+          codexOnEnter: ['sword', 'dolan'],
+          choices: [
+            { text: '🚶 Выйти на дорогу', next: 'road', points: { neutral: 5 } },
+            { text: '🙏 Похоронить погибших', next: 'road', points: { light: 10 } }
+          ]
+        },
+
+        road: {
+          location: 'Перекрёсток',
+          text: `Ты на перекрёстке. Указатель: <span class="magic">Шепчущий Лес</span>, <span class="danger">Пик Отчаяния</span>, <span class="highlight">Руины Дорн-Вейла</span>. Чуть дальше — деревня, башня, озеро и <span class="epic">Древняя Арена</span>.`,
+          choices: [
+            { text: '🌲 В Шепчущий Лес', next: 'forest_entrance' },
+            { text: '⛰️ На Пик Отчаяния', next: 'mountains_entrance' },
+            { text: '🏚️ К руинам Дорн-Вейла', next: 'ruins_entrance' },
+            { text: '⛪ В деревню Вермонт', next: 'village_entrance' },
+            { text: '🏟️ На Древнюю Арену', next: 'arena_entrance', points: { chaos: 5 } }
+          ]
+        },
+
+        // ===== АРЕНА =====
+        arena_entrance: {
+          location: 'Древняя Арена',
+          text: `Колизей, поросший мхом. На стенах — имена павших чемпионов. В центре стоит <span class="epic">Хранитель Арены</span> — призрачный воин. «Смертный! Победи трёх чемпионов — и получишь реликвию, равной которой нет».`,
+          effect: (s) => { s.visitedArena = true; },
+          codexOnEnter: ['arena', 'prizrak', 'shadowknight', 'lich'],
+          choices: [
+            { text: '⚔️ Выйти на первую битву', next: 'arena_fight_1', points: { chaos: 5 } },
+            { text: '🚶 Уйти', next: 'road' }
+          ]
+        },
+        arena_fight_1: {
+          location: 'Арена · Бой 1',
+          text: `<span class="epic">⚔ БИТВА: Призрак-Воин</span> — дух древнего воина поднимается из песка.`,
+          battle: { name: 'Призрак-Воин', hp: 60, returnScene: 'arena_fight_1_win' }
+        },
+        arena_fight_1_win: {
+          location: 'Арена · Победа',
+          text: `Призрак рассыпается. Ты победил! Хранитель кивает: «Ещё двое».`,
+          effect: (s) => { s.journal.push('Победил Призрака-Воина'); s.relics += 1; s.gold += 50; },
+          choices: [
+            { text: '⚔️ Выйти на вторую битву', next: 'arena_fight_2', points: { chaos: 5 } },
+            { text: '🚶 Уйти', next: 'road' }
+          ]
+        },
+        arena_fight_2: {
+          location: 'Арена · Бой 2',
+          text: `<span class="epic">⚔ БИТВА: Тёмный Рыцарь</span> — из тени выходит рыцарь в чёрных доспехах.`,
+          battle: { name: 'Тёмный Рыцарь', hp: 100, returnScene: 'arena_fight_2_win' }
+        },
+        arena_fight_2_win: {
+          location: 'Арена · Победа',
+          text: `Тёмный Рыцарь падает. Ты победил!`,
+          effect: (s) => { s.journal.push('Победил Тёмного Рыцаря'); s.relics += 2; s.gold += 100; s.hp -= 15; },
+          choices: [
+            { text: '⚔️ Выйти на финальную битву', next: 'arena_fight_3', points: { chaos: 10 } },
+            { text: '🚶 Уйти', next: 'road' }
+          ]
+        },
+        arena_fight_3: {
+          location: 'Арена · Финал',
+          text: `<span class="epic">⚔ ФИНАЛЬНАЯ БИТВА: Древний Лич</span> — Хранитель Арены превращается в Лича!`,
+          battle: { name: 'Древний Лич', hp: 150, returnScene: 'arena_fight_3_win' }
+        },
+        arena_fight_3_win: {
+          location: 'Арена · Триумф',
+          text: `Лич рассыпается! Ты стал <span class="epic">Чемпионом Арены</span>! Получаешь <span class="epic">Теневую Корону</span>!`,
+          effect: (s) => {
+            s.journal.push({text: 'Победил в Арене! Получил Теневую Корону', type: 'relic'});
+            s.relics += 3; s.gold += 200; s.hasShadowCrown = true;
+            s.points.chaos += 10;
+          },
+          codexOnEnter: ['shadowcrown'],
+          choices: [
+            { text: '👑 Надеть Теневую Корону', next: 'shadow_crown_ending', special: true },
+            { text: '🚶 Уйти с арены', next: 'road' }
+          ]
+        },
+        shadow_crown_ending: {
+          location: 'Проклятый Трон',
+          text: `Ты надеваешь Теневую Корону. Тьма поглощает тебя. Ты стал Теневым Королём — повелителем мёртвых.`,
+          ending: 'shadow_king'
+        },
+
+        // ===== ЛЕС =====
+        forest_entrance: {
+          location: 'Шепчущий Лес',
+          text: `Из тени выходит <span class="magic">дух Аэлин</span>. «Лес умирает. <span class="danger">Скверна</span> высасывает его душу. Помоги — открою путь к союзнику».`,
+          effect: (s) => { s.visitedForest = true; },
+          codexOnEnter: ['forest', 'aelin'],
+          choices: [
+            { text: '🤝 Согласиться помочь', next: 'forest_help', points: { light: 15 } },
+            { text: '⚔️ Угрожать духу', next: 'forest_threaten', points: { dark: 15 } },
+            { text: '❓ Спросить о Моргоре и уйти', next: 'forest_ask', points: { neutral: 10 } },
+            { text: '🎭 Притвориться другом', next: 'forest_trick', points: { chaos: 15 } }
+          ]
+        },
+        forest_help: {
+          location: 'Сердце Леса',
+          text: `Аэлин ведёт к <span class="danger">Сердцу Леса</span>. «Уничтожь — лес оживёт». Рядом — <span class="highlight">серебряный клинок</span>.`,
+          choices: [
+            { text: '🗡️ Взять клинок и уничтожить кристалл', next: 'forest_sword', points: { light: 15 } },
+            { text: '💥 Разбить кристалл голыми руками', next: 'forest_hands', points: { light: 10, chaos: 5 } }
+          ]
+        },
+        forest_sword: {
+          location: 'Сердце Леса',
+          text: `Удар — <span class="success">Сердце Леса свободно</span>! Аэлин смеётся: «Ты — избранный! Возьми <span class="highlight">Амулет Листвы</span>».`,
+          effect: (s) => { s.hp += 15; s.relics += 1; s.hasSword = true; s.allyAelin = true; s.hasAmulet = true; s.journal.push({text: 'Аэлин присоединилась', type: 'gain'}); s.journal.push({text: 'Получил Амулет Листвы', type: 'relic'}); },
+          codexOnEnter: ['amulet'],
+          choices: [
+            { text: '⛰️ Идти на Пик Отчаяния', next: 'mountains_entrance' },
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        forest_hands: {
+          location: 'Сердце Леса',
+          text: `Ты бьёшь кристалл. <span class="danger">Тьма обжигает</span>. Аэлин исцеляет, но ты теряешь 15 HP.`,
+          effect: (s) => { s.hp = s.hp - 15 + 10; s.relics += 1; s.allyAelin = true; s.hasAmulet = true; },
+          choices: [
+            { text: '⛰️ Идти на Пик Отчаяния', next: 'mountains_entrance' },
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        forest_ask: {
+          location: 'Шепчущий Лес',
+          text: `«Моргор осквернил Сердце Леса. Если найдёшь Кристалл, не слушай его шёпот». Аэлин даёт <span class="highlight">20 золота</span> и уходит.`,
+          effect: (s) => { s.gold += 20; s.knowsMorgorWeakness = true; s.lostAelin = true; },
+          choices: [
+            { text: '⛰️ Идти на Пик Отчаяния', next: 'mountains_entrance' },
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        forest_threaten: {
+          location: 'Шепчущий Лес',
+          text: `Ты хватаешься за оружие. Аэлин грустно улыбается: «Ты пожалеешь». Она исчезает.`,
+          effect: (s) => { s.hp -= 20; s.soul -= 20; s.killedSpirit = true; s.lostAelin = true; s.journal.push({text: 'Прогнал Аэлин', type: 'loss'}); },
+          choices: [
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' },
+            { text: '⛰️ Идти на Пик Отчаяния', next: 'mountains_entrance' }
+          ]
+        },
+        forest_trick: {
+          location: 'Шепчущий Лес',
+          text: `Ты притворяешься другом. Аэлин ведёт к Сердцу Леса. Ты хватаешь кристалл и швыряешь его в реку.`,
+          effect: (s) => { s.relics += 1; s.soul -= 10; s.lostAelin = true; s.journal.push({text: 'Обманул Аэлин', type: 'loss'}); },
+          choices: [
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' },
+            { text: '⛰️ Идти на Пик Отчаяния', next: 'mountains_entrance' }
+          ]
+        },
+
+        // ===== ГОРЫ =====
+        mountains_entrance: {
+          location: 'Пик Отчаяния',
+          text: `На камне сидит <span class="danger">орк Грум</span>. «Моргор убил мой клан. Помоги — помогу тебе».`,
+          effect: (s) => { s.visitedMountains = true; },
+          codexOnEnter: ['mountains', 'grum'],
+          choices: [
+            { text: '🩹 Перевязать раны', next: 'mountains_help', points: { light: 15 } },
+            { text: '⚔️ Добить орка', next: 'mountains_kill', points: { dark: 20 } },
+            { text: '💰 Ограбить и уйти', next: 'mountains_rob', points: { neutral: 10 } },
+            { text: '🎭 Притвориться другом', next: 'mountains_trick', points: { chaos: 20 } }
+          ]
+        },
+        mountains_help: {
+          location: 'Пик Отчаяния',
+          text: `Ты перевязываешь раны. Грум кивает: «Возьми <span class="highlight">40 золота</span>. Иди к жрице Мире на вершине».`,
+          effect: (s) => { s.gold += 40; s.allyGrum = true; s.journal.push({text: 'Грум присоединился', type: 'gain'}); },
+          choices: [
+            { text: '⛰️ Подняться к вершине', next: 'mountains_peak' },
+            { text: '🏚️ Спуститься к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        mountains_kill: {
+          location: 'Пик Отчаяния',
+          text: `Ты убиваешь Грума. Его топор — <span class="highlight">Рунный топор</span>.`,
+          effect: (s) => { s.relics += 1; s.hp -= 10; s.soul -= 20; s.killedGrum = true; s.journal.push({text: 'Убил Грума', type: 'loss'}); },
+          choices: [
+            { text: '⛰️ Подняться к вершине', next: 'mountains_peak' },
+            { text: '🏚️ Спуститься к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        mountains_rob: {
+          location: 'Пик Отчаяния',
+          text: `Ты забираешь <span class="highlight">30 золота</span> и уходишь. Орк умирает.`,
+          effect: (s) => { s.gold += 30; s.soul -= 10; s.lostGrum = true; },
+          choices: [
+            { text: '⛰️ Подняться к вершине', next: 'mountains_peak' },
+            { text: '🏚️ Спуститься к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        mountains_trick: {
+          location: 'Пик Отчаяния',
+          text: `Ты обещаешь помочь, но связываешь орка и вешаешь на дерево.`,
+          effect: (s) => { s.soul -= 20; s.killedGrum = true; },
+          choices: [
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' },
+            { text: '⛰️ Идти к вершине', next: 'mountains_peak' }
+          ]
+        },
+        mountains_peak: {
+          location: 'Вершина',
+          text: `Рядом — <span class="highlight">жрица Мира</span>. «Моргор убил мою сестру. Я знаю путь в храм».`,
+          codexOnEnter: ['mira'],
+          choices: [
+            { text: '🤝 Принять Миру', next: 'mira_join', points: { light: 15 } },
+            { text: '⚔️ Использовать Миру и бросить', next: 'mira_use', points: { dark: 25 } },
+            { text: '💰 Купить её знания', next: 'mira_buy', points: { neutral: 15 } },
+            { text: '🎭 Обмануть и предать', next: 'mira_trick', points: { chaos: 25 } }
+          ]
+        },
+        mira_join: {
+          location: 'Вершина',
+          text: `Мира присоединяется. Она даёт <span class="highlight">Свиток Света</span>.`,
+          effect: (s) => { s.allyMira = true; s.relics += 1; s.hasScroll = true; s.journal.push({text: 'Мира присоединилась', type: 'gain'}); },
+          codexOnEnter: ['scroll'],
+          choices: [
+            { text: '🌲 Идти в Шепчущий Лес', next: 'forest_entrance' },
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        mira_use: {
+          location: 'Вершина',
+          text: `Ты используешь Миру как проводника, но когда она теряет силы — бросаешь умирать.`,
+          effect: (s) => { s.relics += 2; s.soul -= 25; s.betrayedAlly = true; s.hasScroll = true; s.lostMira = true; s.journal.push({text: 'Предал Миру', type: 'loss'}); },
+          choices: [
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' },
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' }
+          ]
+        },
+        mira_buy: {
+          location: 'Вершина',
+          text: `Ты платишь <span class="highlight">50 золота</span> за информацию.`,
+          effect: (s) => { s.gold -= 50; s.knowsEliria = true; s.knowsMorgorWeakness = true; s.lostMira = true; },
+          choices: [
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' },
+            { text: '🗼 Идти к Башне', next: 'tower_entrance' }
+          ]
+        },
+        mira_trick: {
+          location: 'Вершина',
+          text: `Ты убеждаешь Миру, что её сестра жива, и ведёшь в ловушку.`,
+          effect: (s) => { s.relics += 2; s.soul -= 25; s.betrayedAlly = true; s.lostMira = true; s.journal.push({text: 'Предал Миру', type: 'loss'}); },
+          choices: [
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' },
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+
+        // ===== РУИНЫ =====
+        ruins_entrance: {
+          location: 'Руины Дорн-Вейла',
+          text: `В центре руин — <span class="magic">говорящее зеркало</span>. «Отгадай загадку, или останешься здесь навеки».`,
+          effect: (s) => { s.visitedRuins = true; },
+          codexOnEnter: ['ruins'],
+          choices: [
+            { text: '🧩 Отгадать загадку честно', next: 'ruins_riddle', points: { neutral: 10 } },
+            { text: '👻 Спросить о дочери короля', next: 'ruins_daughter', points: { light: 10 } },
+            { text: '💥 Разбить зеркало', next: 'ruins_smash', points: { dark: 15 } },
+            { text: '🎭 Соврать загадку', next: 'ruins_lie', points: { chaos: 15 } }
+          ]
+        },
+        ruins_daughter: {
+          location: 'Руины',
+          text: `Зеркало шепчет: «Дочь короля? <span class="mystery">Элирия</span>... Её дух в Затопленном Храме».`,
+          effect: (s) => { s.knowsEliria = true; s.knowsMorgorWeakness = true; s.knowsProphecy = true; },
+          codexOnEnter: ['eliria'],
+          choices: [
+            { text: '🧩 Отгадать загадку', next: 'ruins_riddle' },
+            { text: '🚪 Покинуть крепость', next: 'swamp_entrance' }
+          ]
+        },
+        ruins_riddle: {
+          location: 'Руины',
+          text: `Зеркало шепчет: «Что нельзя увидеть, но можно потерять, и без чего нельзя жить?»`,
+          choices: [
+            { text: 'Надежда', next: 'ruins_win_light', points: { light: 15 } },
+            { text: 'Память', next: 'ruins_win_neutral', points: { neutral: 15 } },
+            { text: 'Кровь', next: 'ruins_win_dark', points: { dark: 15 } },
+            { text: 'Ничего', next: 'ruins_win_chaos', points: { chaos: 15 } }
+          ]
+        },
+        ruins_win_light: {
+          location: 'Руины',
+          text: `«Верно». Тёмный рыцарь исчезает, оставляя <span class="highlight">Ключ Света</span>.`,
+          effect: (s) => { s.relics += 2; s.gold += 50; s.hasKey = true; s.journal.push({text: 'Получил Ключ Света', type: 'relic'}); },
+          choices: [
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' },
+            { text: '🌊 Идти к Озеру', next: 'lake_entrance' }
+          ]
+        },
+        ruins_win_neutral: {
+          location: 'Руины',
+          text: `«Верно». Тёмный рыцарь исчезает, оставляя <span class="highlight">Ключ Равновесия</span>.`,
+          effect: (s) => { s.relics += 2; s.gold += 50; s.hasKey = true; },
+          choices: [
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' },
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' }
+          ]
+        },
+        ruins_win_dark: {
+          location: 'Руины',
+          text: `«Кровь...» Тьма вырывается, давая <span class="highlight">Ключ Тьмы</span>. Ты теряешь 15 HP.`,
+          effect: (s) => { s.relics += 2; s.hp -= 15; s.hasKey = true; s.knowsBloodline = true; },
+          choices: [
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' },
+            { text: '🏚️ Вернуться к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        ruins_win_chaos: {
+          location: 'Руины',
+          text: `«Ничего?» Оно взрывается осколками. Ты находишь <span class="highlight">Хаотичный Ключ</span>.`,
+          effect: (s) => { s.relics += 2; s.hp -= 20; s.hasKey = true; },
+          choices: [
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' },
+            { text: '🌊 Идти к Озеру', next: 'lake_entrance' }
+          ]
+        },
+        ruins_smash: {
+          location: 'Руины',
+          text: `Ты разбиваешь зеркало. Осколки ранят, но выпадает <span class="highlight">осколок души</span>.`,
+          effect: (s) => { s.hp -= 20; s.relics += 1; s.soul -= 10; },
+          choices: [
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' },
+            { text: '🏚️ Вернуться к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+        ruins_lie: {
+          location: 'Руины',
+          text: `Ты отвечаешь бессмыслицу. Зеркало трескается. Ты хватаешь <span class="highlight">Ключ Хаоса</span>.`,
+          effect: (s) => { s.relics += 1; s.hasKey = true; s.soul -= 10; },
+          choices: [
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' },
+            { text: '🌊 Идти к Озеру', next: 'lake_entrance' }
+          ]
+        },
+
+        // ===== ДЕРЕВНЯ =====
+        village_entrance: {
+          location: 'Деревня Вермонт',
+          text: `Старейшина <span class="highlight">Торвин</span>: «Пропадают люди. Помоги — отблагодарим». Рядом — <span class="mystery">девушка со светящимися глазами</span>.`,
+          effect: (s) => { s.visitedVillage = true; },
+          codexOnEnter: ['village', 'torvin', 'sibilla'],
+          choices: [
+            { text: '🤝 Помочь найти пропавших', next: 'village_quest', points: { light: 15 } },
+            { text: '💰 Потребовать плату вперёд', next: 'village_demand', points: { dark: 10 } },
+            { text: '👁️ Заговорить с девушкой', next: 'village_girl', points: { neutral: 10 } },
+            { text: '🎭 Подшутить и обокрасть', next: 'village_prank', points: { chaos: 15 } }
+          ]
+        },
+        village_girl: {
+          location: 'Деревня Вермонт',
+          text: `Девушка смотрит: «Я — <span class="magic">Сибилла</span>. В тебе кровь Элирии. Иди к Древнему Святилищу».`,
+          effect: (s) => { s.knowsBloodline = true; s.knowsEliria = true; s.relics += 1; s.soul += 5; },
+          codexOnEnter: ['sibilla', 'eliria'],
+          choices: [
+            { text: '🕯️ Идти к Святилищу', next: 'shrine_entrance' },
+            { text: '🌲 Идти в Шепчущий Лес', next: 'forest_entrance' },
+            { text: '⛰️ Идти на Пик Отчаяния', next: 'mountains_entrance' }
+          ]
+        },
+        village_demand: {
+          location: 'Деревня Вермонт',
+          text: `Ты требуешь плату. Торвин вздыхает: «Вот <span class="highlight">20 золота</span>».`,
+          effect: (s) => { s.gold += 20; s.soul -= 15; s.lostTorvin = true; },
+          choices: [
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' },
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' }
+          ]
+        },
+        village_prank: {
+          location: 'Деревня Вермонт',
+          text: `Ты поджигаешь сарай и крадёшь <span class="highlight">30 золота</span>.`,
+          effect: (s) => { s.gold += 30; s.soul -= 20; s.lostTorvin = true; },
+          choices: [
+            { text: '🏚️ Уйти к Руинам', next: 'ruins_entrance' },
+            { text: '🌫️ Уйти на Болото', next: 'swamp_entrance' }
+          ]
+        },
+        village_quest: {
+          location: 'Пещера в горах',
+          text: `Торвин ведёт к <span class="danger">пещере</span>. Там гоблин-шаман крадёт людей.`,
+          effect: (s) => { s.allyTorvin = true; s.journal.push({text: 'Торвин присоединился', type: 'gain'}); },
+          codexOnEnter: ['cave', 'goblin'],
+          choices: [
+            { text: '⚔️ Атаковать гоблина', next: 'cave_fight', points: { light: 10 } },
+            { text: '🗣️ Договориться с гоблином', next: 'cave_talk', points: { light: 15 } },
+            { text: '💰 Продать пленников гоблину', next: 'cave_betray', points: { dark: 30 } }
+          ]
+        },
+        cave_fight: {
+          location: 'Пещера Гоблина',
+          text: `<span class="epic">⚔ БИТВА: Гоблин-Шаман</span> — маленькое существо с посохом из черепов.`,
+          battle: { name: 'Гоблин-Шаман', hp: 70, returnScene: 'cave_fight_win' }
+        },
+        cave_fight_win: {
+          location: 'Пещера Гоблина',
+          text: `Ты побеждаешь! Освобождаешь пленников. <span class="highlight">Нира</span> благодарит: «Возьми <span class="highlight">Свиток Света</span>».`,
+          effect: (s) => { s.relics += 1; s.allyNira = true; s.hasScroll = true; s.journal.push({text: 'Спас Ниру', type: 'gain'}); },
+          codexOnEnter: ['nira', 'scroll'],
+          choices: [
+            { text: '⛰️ Идти к Пику Отчаяния', next: 'mountains_entrance' },
+            { text: '🌲 Идти в Шепчущий Лес', next: 'forest_entrance' },
+            { text: '🕯️ Идти к Святилищу', next: 'shrine_entrance' }
+          ]
+        },
+        cave_talk: {
+          location: 'Пещера Гоблина',
+          text: `Гоблин оказывается изгоем. «Отпущу пленников, если найдёшь мне дом». Он даёт <span class="highlight">Амулет Гоблина</span>.`,
+          effect: (s) => { s.relics += 1; s.soul += 15; s.sparedGoblin = true; s.hasGoblinAmulet = true; s.allyNira = true; },
+          codexOnEnter: ['nira', 'goblinamulet'],
+          choices: [
+            { text: '⛰️ Идти к Пику Отчаяния', next: 'mountains_entrance' },
+            { text: '🌲 Идти в Шепчущий Лес', next: 'forest_entrance' }
+          ]
+        },
+        cave_betray: {
+          location: 'Пещера Гоблина',
+          text: `Ты продаёшь пленников гоблину за <span class="highlight">80 золота</span>.`,
+          effect: (s) => { s.gold += 80; s.soul -= 30; s.killedInnocent = true; s.lostNira = true; s.journal.push({text: 'Предал пленников', type: 'loss'}); },
+          choices: [
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' },
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' }
+          ]
+        },
+
+        // ===== СВЯТИЛИЩЕ =====
+        shrine_entrance: {
+          location: 'Древнее Святилище',
+          text: `На алтаре — <span class="magic">Книга Пророчества</span>. Рядом — <span class="mystery">статуя женщины</span>, похожей на тебя.`,
+          effect: (s) => { s.visitedShrine = true; },
+          codexOnEnter: ['shrine'],
+          choices: [
+            { text: '📖 Прочитать Книгу', next: 'shrine_read', points: { light: 15 } },
+            { text: '💰 Забрать алтарные дары', next: 'shrine_loot', points: { neutral: 10 } },
+            { text: '🔮 Коснуться статуи и взять силу', next: 'shrine_dark', points: { dark: 20 } },
+            { text: '📚 Исказить пророчество', next: 'shrine_distort', points: { chaos: 20 } }
+          ]
+        },
+        shrine_read: {
+          location: 'Святилище',
+          text: `«И придёт дитя крови Элирии, и станет Вечным Стражем». Ты — потомок Элирии.`,
+          effect: (s) => { s.knowsBloodline = true; s.knowsEliria = true; s.knowsProphecy = true; s.prophecyFulfilled = true; s.relics += 2; },
+          choices: [
+            { text: '🌲 Идти в Шепчущий Лес', next: 'forest_entrance' },
+            { text: '⛰️ Идти на Пик Отчаяния', next: 'mountains_entrance' }
+          ]
+        },
+        shrine_dark: {
+          location: 'Святилище',
+          text: `Ты касаешься статуи. «Сила... возьми её». Тьма наполняет тебя.`,
+          effect: (s) => { s.knowsMorgorWeakness = true; s.relics += 3; s.soul -= 15; s.hasDarkBlade = true; },
+          codexOnEnter: ['darkblade'],
+          choices: [
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' },
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' }
+          ]
+        },
+        shrine_loot: {
+          location: 'Святилище',
+          text: `Ты забираешь <span class="highlight">100 золота</span> и <span class="highlight">древнюю монету</span>.`,
+          effect: (s) => { s.gold += 100; s.relics += 1; },
+          choices: [
+            { text: '⛪ Идти в деревню', next: 'village_entrance' },
+            { text: '🗼 Идти к Башне', next: 'tower_entrance' }
+          ]
+        },
+        shrine_distort: {
+          location: 'Святилище',
+          text: `Ты вписываешь свои слова. Пророчество искажено.`,
+          effect: (s) => { s.knowsProphecy = true; s.prophecyFulfilled = false; s.relics += 1; s.soul -= 10; },
+          choices: [
+            { text: '🌫️ Идти на Болото', next: 'swamp_entrance' },
+            { text: '🏚️ Идти к Руинам', next: 'ruins_entrance' }
+          ]
+        },
+
+        // ===== ОЗЕРО =====
+        lake_entrance: {
+          location: 'Озеро Слёз',
+          text: `На берегу — <span class="magic">девушка в белом</span> плачет. «Я — Лианна. Потеряла брата».`,
+          effect: (s) => { s.visitedLake = true; },
+          codexOnEnter: ['lake', 'lianna', 'werebear'],
+          choices: [
+            { text: '🤝 Помочь найти брата', next: 'lake_help', points: { light: 15 } },
+            { text: '💰 Ограбить девушку', next: 'lake_rob', points: { dark: 25 } },
+            { text: '❓ Спросить о Моргоре и уйти', next: 'lake_ask', points: { neutral: 10 } },
+            { text: '🎭 Соврать о её брате', next: 'lake_lie', points: { chaos: 25 } }
+          ]
+        },
+        lake_help: {
+          location: 'Пещера у Озера',
+          text: `<span class="epic">⚔ БИТВА: Медведь-Оборотень</span> — заколдованный брат Лианны.`,
+          battle: { name: 'Медведь-Оборотень', hp: 90, returnScene: 'lake_cure' }
+        },
+        lake_cure: {
+          location: 'Пещера',
+          text: `Проклятие спадает! Брат Лианны жив. Лианна даёт <span class="highlight">Слезу Озера</span>.`,
+          effect: (s) => { s.relics += 2; s.hasTear = true; s.soul += 20; s.journal.push({text: 'Получил Слезу Озера', type: 'relic'}); },
+          codexOnEnter: ['tear'],
+          choices: [
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' },
+            { text: '🌊 Идти к Затопленному Храму', next: 'temple_locked' }
+          ]
+        },
+        lake_rob: {
+          location: 'Озеро Слёз',
+          text: `Ты обыскиваешь Лианну. <span class="highlight">Амулет Слёз</span> и <span class="highlight">40 золота</span>.`,
+          effect: (s) => { s.relics += 1; s.gold += 40; s.soul -= 25; s.killedInnocent = true; },
+          choices: [
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' },
+            { text: '🌫️ Идти к Болоту', next: 'swamp_entrance' }
+          ]
+        },
+        lake_ask: {
+          location: 'Озеро Слёз',
+          text: `«Моргор ищет Кровь Пророчества».`,
+          effect: (s) => { s.knowsBloodline = true; s.knowsProphecy = true; },
+          choices: [
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' },
+            { text: '🗼 Идти к Башне', next: 'tower_entrance' }
+          ]
+        },
+        lake_lie: {
+          location: 'Озеро Слёз',
+          text: `Ты говоришь Лианне, что её брат мёртв. Она бросается в озеро.`,
+          effect: (s) => { s.relics += 1; s.gold += 30; s.soul -= 25; s.killedInnocent = true; },
+          choices: [
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' },
+            { text: '🌫️ Идти к Болоту', next: 'swamp_entrance' }
+          ]
+        },
+
+        // ===== ШАХТЫ =====
+        mines_entrance: {
+          location: 'Заброшенные Шахты',
+          text: `У входа — <span class="highlight">шахтёр Борен</span>. «Не ходи туда. Там древнее зло».`,
+          effect: (s) => { s.visitedMines = true; },
+          codexOnEnter: ['mines', 'boren', 'ghost'],
+          choices: [
+            { text: '⛏️ Спуститься и упокоить дух', next: 'mines_peace', points: { light: 15 } },
+            { text: '⚔️ Спуститься и убить призрака', next: 'mines_fight', points: { dark: 15 } },
+            { text: '💰 Забрать серебро и уйти', next: 'mines_loot', points: { neutral: 10 } },
+            { text: '🎭 Обрушить шахты', next: 'mines_collapse', points: { chaos: 20 } }
+          ]
+        },
+        mines_peace: {
+          location: 'Глубина Шахт',
+          text: `Ты произносишь слова ритуала. Призрак успокаивается. «Возьми <span class="highlight">Звёздное Серебро</span> и <span class="highlight">Слезу Шахтёра</span>».`,
+          effect: (s) => { s.relics += 2; s.hasTear = true; s.hasStarSilver = true; s.soul += 20; },
+          codexOnEnter: ['starsilver', 'tear'],
+          choices: [
+            { text: '🗼 Идти к Башне Забвения', next: 'tower_entrance' },
+            { text: '🌊 Идти к Затопленному Храму', next: 'temple_locked' }
+          ]
+        },
+        mines_fight: {
+          location: 'Глубина Шахт',
+          text: `<span class="epic">⚔ БИТВА: Призрак Шахтёра</span> — он охраняет Звёздное Серебро.`,
+          battle: { name: 'Призрак Шахтёра', hp: 80, returnScene: 'mines_fight_win' }
+        },
+        mines_fight_win: {
+          location: 'Глубина Шахт',
+          text: `Ты побеждаешь. Берёшь <span class="highlight">Звёздное Серебро</span> и <span class="highlight">80 золота</span>.`,
+          effect: (s) => { s.relics += 2; s.gold += 80; s.hasStarSilver = true; s.soul -= 10; },
+          codexOnEnter: ['starsilver'],
+          choices: [
+            { text: '🗼 Идти к Башне', next: 'tower_entrance' },
+            { text: '🌫️ Идти к Болоту', next: 'swamp_entrance' }
+          ]
+        },
+        mines_loot: {
+          location: 'Глубина Шахт',
+          text: `Ты тихо забираешь <span class="highlight">Звёздное Серебро</span>.`,
+          effect: (s) => { s.relics += 2; s.hasStarSilver = true; },
+          codexOnEnter: ['starsilver'],
+          choices: [
+            { text: '🗼 Идти к Башне', next: 'tower_entrance' },
+            { text: '⛪ Идти в деревню', next: 'village_entrance' }
+          ]
+        },
+        mines_collapse: {
+          location: 'Глубина Шахт',
+          text: `Ты обрушиваешь своды. Призрак и серебро погребены.`,
+          effect: (s) => { s.relics += 1; s.soul -= 15; },
+          choices: [
+            { text: '🗼 Идти к Башне', next: 'tower_entrance' },
+            { text: '🌫️ Идти к Болоту', next: 'swamp_entrance' }
+          ]
+        },
+
+        // ===== БАШНЯ =====
+        tower_entrance: {
+          location: 'Башня Забвения',
+          text: `За столом — <span class="highlight">слепой Kael</span>. «Правда имеет цену».`,
+          effect: (s) => { s.visitedTower = true; },
+          codexOnEnter: ['tower', 'kael'],
+          choices: [
+            { text: '📖 Заплатить за правду', next: 'tower_pay', points: { neutral: 10 } },
+            { text: '🕊️ Убедить помочь', next: 'tower_persuade', points: { light: 15 } },
+            { text: '⚔️ Забрать силой', next: 'tower_force', points: { dark: 15 } },
+            { text: '📚 Прочитать запретную книгу', next: 'tower_forbidden', points: { chaos: 15 } }
+          ]
+        },
+        tower_pay: {
+          location: 'Башня',
+          text: `Kael раскрывает свиток: «Моргор — король Аран. Дочь Элирия прокляла его. Кристалл — её сердце».`,
+          effect: (s) => { s.gold -= 40; s.knowsTrueName = true; s.knowsEliria = true; s.knowsMorgorWeakness = true; s.allyKael = true; },
+          codexOnEnter: ['eliria', 'crystal'],
+          choices: [
+            { text: '🌊 Идти к Затопленному Храму', next: 'temple_locked' }
+          ]
+        },
+        tower_persuade: {
+          location: 'Башня',
+          text: `Ты рассказываешь Kael о своей боли. Он кивает: «Возьми <span class="highlight">Свиток Истинного Имени</span>».`,
+          effect: (s) => { s.knowsTrueName = true; s.relics += 1; s.soul += 10; s.allyKael = true; },
+          choices: [
+            { text: '🌊 Идти к Затопленному Храму', next: 'temple_locked' }
+          ]
+        },
+        tower_force: {
+          location: 'Башня',
+          text: `Ты хватаешь свитки. Kael не сопротивляется.`,
+          effect: (s) => { s.hp -= 15; s.soul -= 20; s.knowsTrueName = true; s.lostKael = true; },
+          choices: [
+            { text: '🌊 Идти к Затопленному Храму', next: 'temple_locked' }
+          ]
+        },
+        tower_forbidden: {
+          location: 'Башня',
+          text: `Ты открываешь книгу. Ты узнаёшь: Дол-Аран разрушил первый Кристалл, а не Моргор. А ещё... что мир может быть сном.`,
+          effect: (s) => { s.hp -= 15; s.readForbiddenBook = true; s.knowsProphecy = true; s.knowsTrueName = true; s.soul -= 10; s.dreamHints++; s.lostKael = true; s.journal.push({text: 'Узнал о природе сна', type: 'loss'}); },
+          codexOnEnter: ['crystal', 'dreamshard'],
+          choices: [
+            { text: '🌊 Идти к Затопленному Храму', next: 'temple_locked' }
+          ]
+        },
+
+        // ===== БОЛОТО =====
+        swamp_entrance: {
+          location: 'Гнилое Болото',
+          text: `Из трясины — <span class="magic">старик в лохмотьях</span>. «Я — Хранитель Тайн. Расскажу истинное имя Моргора... за плату».`,
+          effect: (s) => { s.visitedSwamp = true; },
+          codexOnEnter: ['swamp'],
+          choices: [
+            { text: '💰 Заплатить 30 золота', next: 'swamp_pay', points: { neutral: 10 } },
+            { text: '🕊️ Убедить его помочь', next: 'swamp_persuade', points: { light: 15 } },
+            { text: '⚔️ Забрать тайну силой', next: 'swamp_force', points: { dark: 20 } },
+            { text: '🎭 Украсть тайну', next: 'swamp_steal', points: { chaos: 20 } }
+          ]
+        },
+        swamp_pay: {
+          location: 'Болото',
+          text: `Старик шепчет: «Истинное имя — Король Аран. Скажи ему имя Элирия — и он дрогнет».`,
+          effect: (s) => { s.gold -= 30; s.knowsTrueName = true; s.knowsEliria = true; s.knowsMorgorWeakness = true; },
+          choices: [
+            { text: '🌊 Идти к Озеру Слёз', next: 'lake_entrance' },
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' },
+            { text: '🌊 Идти к Затопленному Храму', next: 'temple_locked' }
+          ]
+        },
+        swamp_persuade: {
+          location: 'Болото',
+          text: `Старик даёт <span class="highlight">Свиток Истинного Имени</span> бесплатно.`,
+          effect: (s) => { s.knowsTrueName = true; s.knowsEliria = true; s.knowsRitual = true; s.relics += 1; },
+          choices: [
+            { text: '🌊 Идти к Озеру Слёз', next: 'lake_entrance' },
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' }
+          ]
+        },
+        swamp_force: {
+          location: 'Болото',
+          text: `Ты хватаешь старика за горло. Он говорит имя.`,
+          effect: (s) => { s.hp -= 25; s.knowsTrueName = true; s.soul -= 20; },
+          choices: [
+            { text: '🌊 Идти к Озеру', next: 'lake_entrance' },
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' }
+          ]
+        },
+        swamp_steal: {
+          location: 'Болото',
+          text: `Ты крадёшь свиток старика.`,
+          effect: (s) => { s.knowsTrueName = true; s.knowsEliria = true; s.relics += 1; s.soul -= 10; },
+          choices: [
+            { text: '🌊 Идти к Озеру', next: 'lake_entrance' },
+            { text: '⛏️ Идти к Шахтам', next: 'mines_entrance' }
+          ]
+        },
+
+        // ===== ФИНАЛ =====
+        temple_locked: {
+          location: 'Затопленный Храм',
+          text: `Ты у входа. Двери запечатаны. Пути назад нет.`,
+          codexOnEnter: ['temple'],
+          choices: [
+            { text: '🔓 Попытаться открыть', next: 'temple_revelation' }
+          ]
+        },
+        temple_revelation: {
+          location: 'Затопленный Храм · Порог',
+          dynamic: (s) => {
+            const p = s.points;
+            const sides = [
+              { name: 'light', val: p.light }, { name: 'dark', val: p.dark },
+              { name: 'neutral', val: p.neutral }, { name: 'chaos', val: p.chaos }
+            ];
+            sides.sort((a, b) => b.val - a.val);
+            s.faction = sides[0].name;
+
+            const leaveMessages = [];
+            Object.keys(allyDescriptions).forEach(key => {
+              if (s[key] && allyDescriptions[key].willLeaveIf(s)) {
+                s[key] = false;
+                const lostKey = key.replace('ally', 'lost');
+                s[lostKey] = true;
+                leaveMessages.push(allyDescriptions[key].leaveReason);
+                s.journal.push({ text: `${allyDescriptions[key].name} покинул(а) тебя`, type: 'loss' });
+              }
+            });
+
+            const factionTexts = {
+              light: { title: '☀️ ПУТЬ СВЕТА', color: '#f3d59b', text: `Печать отступает. Свет озаряет твои руки. <span class="highlight">Ты — дитя Света</span>.` },
+              dark: { title: '🌑 ПУТЬ ТЬМЫ', color: '#d47a6a', text: `Печать отступает, но тьма входит в тебя. <span class="danger">Ты — дитя Тьмы</span>.` },
+              neutral: { title: '⚖️ ПУТЬ РАВНОВЕСИЯ', color: '#a7c8e8', text: `Печать отступает без сопротивления. <span class="magic">Ты — Хранитель Равновесия</span>.` },
+              chaos: { title: '🎭 ПУТЬ ХАОСА', color: '#c9a7e8', text: `Печать трескается от смеха. <span class="mystery">Ты — дитя Хаоса</span>.` }
+            };
+
+            const ft = factionTexts[s.faction];
+            let extra = '';
+            if (leaveMessages.length > 0) {
+              extra = '<br><br><span class="warn">⚔ Твои союзники покидают тебя:</span><br><span class="danger">' + leaveMessages.join('<br>') + '</span>';
+            }
+
+            let dreamHint = '';
+            if (s.hasDreamShard) {
+              dreamHint = '<br><br><span class="dream">💭 Осколок Сна пульсирует в твоей руке.</span>';
+            }
+            if (s.dreamHints >= 3) {
+              dreamHint += '<br><span class="dream">💭 Слова вещуньи возвращаются: «Ты уже просыпался, дитя. Много раз».</span>';
+            }
+
+            return {
+              location: 'Затопленный Храм · Порог',
+              text: `<div class="revelation">
+                <div class="revelation-title" style="color: ${ft.color};">${ft.title}</div>
+                <div class="revelation-sub">Игра наблюдала за тобой. Теперь ты знаешь, кем стал.</div>
+                <div class="revelation-body">${ft.text}${extra}${dreamHint}</div>
+              </div>`,
+              choices: [{ text: '⚔️ Войти в храм', next: 'temple_enter' }]
+            };
+          }
+        },
+        temple_enter: {
+          dynamic: (s) => {
+            const allies = countAllies();
+            const hasKeyItem = s.hasKey || s.hasSword || s.hasCrystal;
+
+            if (s.hasDreamShard && s.dreamHints >= 3) {
+              const choices = [
+                { text: '💭 Всмотреться в Осколок Сна', next: 'dream_ending', special: true, dreamChoice: true }
+              ];
+              if (allies >= 3 && hasKeyItem) {
+                choices.push({ text: '⚔️ Атаковать Моргора', next: 'final_battle', points: { dark: 5 } });
+                choices.push({ text: '🗣️ Сказать «Элирия»', next: 'final_name', points: { light: 5 } });
+              }
+              return {
+                location: 'Затопленный Храм · Алтарь',
+                text: `Ты входишь. В центре — <span class="danger">Кристалл Бездны</span>. Перед ним — <span class="danger">Моргор</span>. <span class="dream">Осколок Сна в твоей руке пульсирует всё сильнее.</span>`,
+                choices: choices
+              };
+            }
+
+            if (allies >= 3 && hasKeyItem) {
+              const choices = [
+                { text: '⚔️ Атаковать Моргора', next: 'final_battle', points: { dark: 5 } },
+                { text: '🗣️ Сказать «Элирия»', next: 'final_name', points: { light: 5 } },
+                { text: '🔮 Коснуться Кристалла', next: 'final_touch', points: { neutral: 5 } },
+                { text: '🎭 Исказить финал', next: 'final_chaos', points: { chaos: 5 } },
+                { text: '📖 Прочитать истинное пророчество', next: 'final_prophecy', points: { light: 10 }, require: (s) => s.prophecyFulfilled && s.knowsBloodline, special: true }
+              ];
+              if (s.hasShadowCrown) choices.push({ text: '👑 Надеть Теневую Корону', next: 'shadow_crown_ending', special: true });
+              if (s.relics >= 10) choices.push({ text: '📜 Слить силу всех реликвий', next: 'relic_master_ending', special: true, relicChoice: true });
+              if (!s.lostAelin && !s.lostGrum && !s.lostMira && !s.lostNira && !s.lostTorvin && !s.lostKael && !s.betrayedAlly && !s.killedInnocent) {
+                choices.push({ text: '🛡️ Верное братство', next: 'final_loyal_brotherhood', special: true });
+              }
+              return {
+                location: 'Затопленный Храм · Алтарь',
+                text: `Ты входишь. В центре — <span class="danger">Кристалл Бездны</span>. Перед ним — <span class="danger">Моргор</span>. С тобой — ${allies} союзников.`,
+                choices: choices
+              };
+            } else if (hasKeyItem) {
+              const faction = s.points.light >= s.points.dark && s.points.light >= s.points.neutral && s.points.light >= s.points.chaos ? 'light' :
+                             s.points.dark >= s.points.neutral && s.points.dark >= s.points.chaos ? 'dark' :
+                             s.points.neutral >= s.points.chaos ? 'neutral' : 'chaos';
+              const lonelyChoices = [];
+              if (faction === 'light') lonelyChoices.push({ text: '🕯️ Пройти путь Света в одиночестве', next: 'final_lonely_light', special: true });
+              else if (faction === 'dark') lonelyChoices.push({ text: '🌑 Стать тёмным лордом без свиты', next: 'final_lonely_dark', special: true });
+              else if (faction === 'neutral') lonelyChoices.push({ text: '🚶 Идти по дороге одному', next: 'final_lonely_neutral', special: true });
+              else lonelyChoices.push({ text: '🎭 Смеяться в пустоту', next: 'final_lonely_chaos', special: true });
+              lonelyChoices.push({ text: '💔 Принять пустую победу', next: 'final_lonely_victory', special: true });
+              if (s.hasShadowCrown) lonelyChoices.push({ text: '👑 Надеть Теневую Корону', next: 'shadow_crown_ending', special: true });
+              if (s.relics >= 10) lonelyChoices.push({ text: '📜 Слить силу всех реликвий', next: 'relic_master_ending', special: true, relicChoice: true });
+              return {
+                location: 'Затопленный Храм · Алтарь',
+                text: `Ты входишь в храм <span class="warn">один</span>. Моргор смеётся: «Ты один. Как и я».`,
+                choices: lonelyChoices
+              };
+            } else {
+              return {
+                location: 'Затопленный Храм',
+                text: `Печать не поддаётся. У тебя нет ключа. <span class="danger">Тьма поглощает тебя.</span>`,
+                choices: [{ text: '💀 Принять судьбу', next: 'gameover_scene' }]
+              };
+            }
+          }
+        },
+
+        // === РЕЛИКВИИ ===
+        relic_master_ending: {
+          location: 'Затопленный Храм · Алтарь',
+          text: `<span class="epic">📜 ВЛАДЫКА РЕЛИКВИЙ</span> — все реликвии мира сливаются в один поток силы. Ты поглощаешь их. Ты — Владыка Реликрий.`,
+          effect: (s) => { s.morghorDead = true; s.curseBroken = true; s.eliriaFreed = true; },
+          ending: 'relic_master'
+        },
+        shadow_crown_ending: {
+          location: 'Проклятый Трон',
+          text: `Ты надеваешь <span class="danger">Теневую Корону</span>. Ты — новый Теневой Король. Моргор преклоняется. Ты правишь вечно.`,
+          effect: (s) => { s.morghorDead = true; s.soul = 0; },
+          ending: 'shadow_king'
+        },
+
+        // === СОН ===
+        dream_ending: {
+          location: 'За гранью сна',
+          text: `<span class="dream">💭 Ты касаешься Осколка Сна. Мир вокруг начинает мерцать.</span>`,
+          choices: [
+            { text: '💭 Проснуться', next: 'dream_awake', special: true, dreamChoice: true },
+            { text: '💭 Остаться в мире снов', next: 'dream_stay', special: true, dreamChoice: true },
+            { text: '🌅 Узнать правду о сне', next: 'dream_truth', special: true, dreamChoice: true }
+          ]
+        },
+        dream_awake: {
+          location: 'Дол-Аран · Утро',
+          text: `Ты открываешь глаза. Ты лежишь в своей кровати в Дол-Аране. За окном — рассвет. Мать зовёт тебя завтракать. Всё это было лишь сном.`,
+          effect: (s) => { s.journal.push({text: 'Проснулся от сна', type: 'gain'}); },
+          ending: 'it_was_all_a_dream'
+        },
+        dream_stay: {
+          location: 'Мир Снов',
+          text: `Ты решаешь остаться. Мир снов становится явью.`,
+          effect: (s) => { s.morghorDead = true; s.curseBroken = true; },
+          ending: 'chaos_void'
+        },
+        dream_truth: {
+          location: 'Древний Храм',
+          text: `Ты видишь истину: твоё тело спит в древнем храме уже тысячу лет. Ты — Избранный, проходящий Сон Тысячи Лет. Ты просыпаешься. И понимаешь: всё, что ты пережил — было испытанием.`,
+          effect: (s) => { s.journal.push({text: 'Узнал истину о Сне Тысячи Лет', type: 'gain'}); },
+          ending: 'dream_awakening'
+        },
+
+        // === ОДИНОЧНЫЕ ФИНАЛЫ ===
+        final_lonely_light: {
+          location: 'Затопленный Храм',
+          text: `Ты подходишь к Кристаллу один. Ты спас мир — но в одиночку.`,
+          effect: (s) => { s.morghorRedeemed = true; s.curseBroken = true; s.eliriaFreed = true; },
+          ending: 'lonely_light'
+        },
+        final_lonely_dark: {
+          location: 'Трон Моргора',
+          text: `Ты убиваешь Моргора в одиночестве. Трон твой. Но вокруг — тишина.`,
+          effect: (s) => { s.morghorDead = true; s.soul = 0; },
+          ending: 'lonely_dark'
+        },
+        final_lonely_neutral: {
+          location: 'Дорога',
+          text: `Ты не стал героем. Ты просто идёшь по дороге.`,
+          effect: (s) => { s.morghorDead = true; },
+          ending: 'lonely_neutral'
+        },
+        final_lonely_chaos: {
+          location: 'Пепелище',
+          text: `Ты стоишь один на пепелище мира. Смеёшься.`,
+          effect: (s) => { s.morghorDead = true; },
+          ending: 'lonely_chaos'
+        },
+        final_lonely_victory: {
+          location: 'Затопленный Храм',
+          text: `Ты побеждаешь Моргора. Победа — без свидетелей.`,
+          effect: (s) => { s.morghorDead = true; s.curseBroken = true; },
+          ending: 'lonely_victory'
+        },
+
+        final_loyal_brotherhood: {
+          location: 'Затопленный Храм · Алтарь',
+          text: `Ты отказываешься от битвы. Все твои союзники встают рядом. Ты создаёшь Орден.`,
+          effect: (s) => { s.morghorRedeemed = true; s.curseBroken = true; s.eliriaFreed = true; s.prophecyFulfilled = true; },
+          ending: 'loyal_brotherhood'
+        },
+        final_prophecy: {
+          location: 'Храм',
+          text: `Ты читаешь истинное пророчество. Элирия оборачивается. «Сын мой...»`,
+          effect: (s) => { s.morghorWeakened = true; s.eliriaFreed = true; s.curseBroken = true; },
+          choices: [
+            { text: '🕊️ Обнять мать', next: 'final_family', points: { light: 10 } },
+            { text: '🗣️ Простить Моргора', next: 'final_redemption', points: { light: 10 } }
+          ]
+        },
+        final_family: {
+          location: 'Храм',
+          text: `Ты обнимаешь Элирию. Моргор подходит. «Прости».`,
+          effect: (s) => { s.morghorRedeemed = true; s.curseBroken = true; s.prophecyFulfilled = true; },
+          ending: 'family_reunion'
+        },
+        final_battle: {
+          location: 'Храм · Бой',
+          text: `<span class="epic">⚔ ФИНАЛЬНАЯ БИТВА: Тёмный Лорд Моргор</span> — дракон ревёт за его спиной.`,
+          battle: { name: 'Тёмный Лорд Моргор', hp: 200, returnScene: 'final_name', isFinal: true }
+        },
+        final_name: {
+          location: 'Храм',
+          text: `«Элирия!» Моргор замирает. Его глаза становятся человеческими.`,
+          effect: (s) => { s.morghorWeakened = true; },
+          choices: [
+            { text: '⚔️ Нанести удар', next: 'final_kill', points: { dark: 15 } },
+            { text: '🤝 Предложить искупление', next: 'final_redemption', points: { light: 20 } },
+            { text: '💔 Отдать Слезу Элирии', next: 'final_tear', points: { light: 15 }, require: (s) => s.hasTear }
+          ]
+        },
+        final_touch: {
+          location: 'Храм',
+          text: `Ты касаешься Кристалла.`,
+          effect: (s) => { s.morghorWeakened = true; s.knowsProphecy = true; },
+          choices: [
+            { text: '💔 Принять боль и разбить', next: 'final_sacrifice', points: { light: 15, neutral: 10 } },
+            { text: '🗣️ Сказать «Элирия»', next: 'final_name', points: { light: 10 } },
+            { text: '👁️ Поглотить силу Кристалла', next: 'final_god', points: { dark: 30 }, require: (s) => s.knowsBloodline }
+          ]
+        },
+        final_chaos: {
+          location: 'Храм',
+          text: `Ты произносишь бессмысленные слова.`,
+          effect: (s) => { s.morghorDead = true; s.curseBroken = true; },
+          choices: [
+            { text: '🎭 Разрушить всё и уйти', next: 'end_chaos_agent' },
+            { text: '🃏 Забрать силу и исчезнуть', next: 'end_chaos_trickster' },
+            { text: '🕳️ Заглянуть в пустоту', next: 'end_chaos_void' },
+            { text: '👑 Создать хаотичный порядок', next: 'end_chaos_jester' }
+          ]
+        },
+        end_chaos_agent: { location: 'Пепелище', text: `Ты разрушаешь храм.`, ending: 'chaos_agent' },
+        end_chaos_jester: { location: 'Трон Хаоса', text: `Ты переписываешь мир.`, ending: 'chaos_jester' },
+        end_chaos_void: { location: 'За гранью', text: `Ты растворяешься в пустоте.`, ending: 'chaos_void' },
+        end_chaos_trickster: { location: 'Неизвестно', text: `Ты создаёшь нового Моргора.`, ending: 'chaos_trickster' },
+        final_tear: {
+          location: 'Храм',
+          text: `Ты отдаёшь Слезу Элирии. Моргор сжимает её. Тьма уходит.`,
+          effect: (s) => { s.morghorRedeemed = true; },
+          ending: 'light_savior'
+        },
+        final_kill: {
+          location: 'Храм',
+          text: `Ты наносишь удар. Моргор падает. «Ты... стал мной».`,
+          effect: (s) => { s.morghorDead = true; s.soul -= 25; },
+          choices: [
+            { text: '🌑 Принять тьму', next: 'end_dark', points: { dark: 20 } },
+            { text: '👑 Стать проклятым королём', next: 'end_cursed', points: { dark: 15 } },
+            { text: '🐉 Приручить дракона', next: 'end_dragon', points: { chaos: 10, dark: 5 }, special: true }
+          ]
+        },
+        final_redemption: {
+          location: 'Храм',
+          text: `Ты протягиваешь руку. «Все заслуживают шанс».`,
+          effect: (s) => { s.morghorRedeemed = true; s.curseBroken = true; },
+          ending: 'light_savior'
+        },
+        final_sacrifice: {
+          location: 'Храм',
+          text: `Ты принимаешь боль Моргора.`,
+          effect: (s) => { s.hp = 1; },
+          ending: 'light_martyr'
+        },
+        final_dark: { location: 'Храм', text: `Ты отдаёшь себя тьме.`, effect: (s) => { s.morghorDead = true; s.soul = 0; }, ending: 'dark_lord' },
+        final_god: { location: 'Храм', text: `Ты поглощаешь силу Кристалла.`, effect: (s) => { s.morghorDead = true; s.curseBroken = true; }, ending: 'dark_god' },
+        end_dark: { location: 'Трон', text: `Тьма поглотила тебя.`, ending: 'dark_lord' },
+        end_cursed: { location: 'Трон', text: `Ты правишь вечно.`, ending: 'dark_cursed' },
+        end_dragon: { location: 'Небеса', text: `Ты приручаешь дракона.`, ending: 'dragon_rider' },
+
+        gameover_scene: {
+          location: 'Бездна',
+          text: `<span class="danger">Тьма поглотила тебя. Твоё приключение окончено.</span>`,
+          ending: 'gameover'
+        }
+      };
+
+      // ==================== DOM ====================
+      const mainMenu = document.getElementById('mainMenu');
+      const btnStart = document.getElementById('btnStart');
+      const btnCollection = document.getElementById('btnCollection');
+      const btnCodexMenu = document.getElementById('btnCodexMenu');
+      const btnSettings = document.getElementById('btnSettings');
+      const btnAbout = document.getElementById('btnAbout');
+      const collectionPanel = document.getElementById('collectionPanel');
+      const closeCollection = document.getElementById('closeCollection');
+      const collectionGrid = document.getElementById('collectionGrid');
+      const collectionProgress = document.getElementById('collectionProgress');
+      const codexPanel = document.getElementById('codexPanel');
+      const closeCodex = document.getElementById('closeCodex');
+      const codexTabs = document.getElementById('codexTabs');
+      const codexContent = document.getElementById('codexContent');
+      const codexProgress = document.getElementById('codexProgress');
+      const settingsPanel = document.getElementById('settingsPanel');
+      const closeSettings = document.getElementById('closeSettings');
+      const musicSlider = document.getElementById('musicSlider');
+      const musicVal = document.getElementById('musicVal');
+      const sfxSlider = document.getElementById('sfxSlider');
+      const sfxVal = document.getElementById('sfxVal');
+      const animToggle = document.getElementById('animToggle');
+      const resetCollection = document.getElementById('resetCollection');
+      const resetCodex = document.getElementById('resetCodex');
+      const aboutPanel = document.getElementById('aboutPanel');
+      const closeAbout = document.getElementById('closeAbout');
+
+      const rpgContainer = document.getElementById('rpgContainer');
+      const storyEl = document.getElementById('storyText');
+      const choicesPanel = document.getElementById('choicesPanel');
+      const hpEl = document.getElementById('hpValue');
+      const maxHpEl = document.getElementById('maxHpValue');
+      const goldEl = document.getElementById('goldValue');
+      const relicEl = document.getElementById('relicValue');
+      const soulEl = document.getElementById('soulValue');
+      const lvlEl = document.getElementById('lvlValue');
+      const alliesEl = document.getElementById('alliesValue');
+      const locationEl = document.getElementById('locationValue');
+      const actEl = document.getElementById('actValue');
+      const pathEl = document.getElementById('pathValue');
+      const mysteryIndicator = document.getElementById('mysteryIndicator');
+      const battleHud = document.getElementById('battleHud');
+      const battleTitle = document.getElementById('battleTitle');
+      const battleHpFill = document.getElementById('battleHpFill');
+      const battleHpText = document.getElementById('battleHpText');
+      const battleMaxHpText = document.getElementById('battleMaxHpText');
+
+      const charPanel = document.getElementById('charPanel');
+      const openCharBtn = document.getElementById('openCharBtn');
+      const closeCharBtn = document.getElementById('closeCharBtn');
+      const openCodexBtn = document.getElementById('openCodexBtn');
+      const charAvatar = document.getElementById('charAvatar');
+      const charName = document.getElementById('charName');
+      const charTitle = document.getElementById('charTitle');
+      const charHp = document.getElementById('charHp');
+      const charMaxHp = document.getElementById('charMaxHp');
+      const charGold = document.getElementById('charGold');
+      const charRelics = document.getElementById('charRelics');
+      const charSoul = document.getElementById('charSoul');
+      const charLevel = document.getElementById('charLevel');
+      const charAllies = document.getElementById('charAllies');
+      const charHpBar = document.getElementById('charHpBar');
+      const inventoryGrid = document.getElementById('inventoryGrid');
+      const allyList = document.getElementById('allyList');
+      const journalList = document.getElementById('journalList');
+
+      // ==================== ФУНКЦИИ ====================
+      function getFactionInfo() {
+        const f = state.faction;
+        if (f === 'light') return { name: 'ПУТЬ СВЕТА', color: '#f3d59b', data: 'light', music: 'light' };
+        if (f === 'dark') return { name: 'ПУТЬ ТЬМЫ', color: '#d47a6a', data: 'dark', music: 'dark' };
+        if (f === 'neutral') return { name: 'ПУТЬ РАВНОВЕСИЯ', color: '#a7c8e8', data: 'neutral', music: 'neutral' };
+        if (f === 'chaos') return { name: 'ПУТЬ ХАОСА', color: '#c9a7e8', data: 'chaos', music: 'chaos' };
+        return { name: 'НЕ ОПРЕДЕЛЁН', color: '#b9a68b', data: 'none', music: 'menu' };
+      }
+
+      function countAllies() {
+        return [state.allyAelin, state.allyGrum, state.allyMira,
+                state.allyNira, state.allyTorvin, state.allyKael]
+                .filter(Boolean).length;
+      }
+
+      function getCharAvatar() {
+        const f = state.faction;
+        if (f === 'light') return '🧝';
+        if (f === 'dark') return '🧛';
+        if (f === 'neutral') return '🧙';
+        if (f === 'chaos') return '🃏';
+        return '🧙';
+      }
+
+      function getCharTitle() {
+        const f = state.faction;
+        if (f === 'light') return 'Дитя Света, наследник Элирии';
+        if (f === 'dark') return 'Дитя Тьмы, наследник Моргора';
+        if (f === 'neutral') return 'Хранитель Равновесия';
+        if (f === 'chaos') return 'Дитя Хаоса, разрушитель порядка';
+        if (state.knowsBloodline) return 'Последний из рода Арана';
+        return 'Безымянный Странник';
+      }
+
+      function updateStatus() {
+        hpEl.textContent = Math.max(0, state.hp);
+        maxHpEl.textContent = state.maxHp;
+        goldEl.textContent = state.gold;
+        relicEl.textContent = state.relics;
+        soulEl.textContent = state.soul;
+        lvlEl.textContent = state.level;
+        alliesEl.textContent = countAllies();
+
+        const fInfo = getFactionInfo();
+        if (state.faction !== 'none') {
+          rpgContainer.setAttribute('data-faction', fInfo.data);
+          mysteryIndicator.textContent = `✦ ${fInfo.name} ✦`;
+          mysteryIndicator.style.color = fInfo.color;
+          pathEl.textContent = fInfo.name;
+        } else {
+          rpgContainer.setAttribute('data-faction', 'none');
+          mysteryIndicator.textContent = '✦ Твоя природа сокрыта ✦';
+          mysteryIndicator.style.color = '#6e6455';
+          if (state.decisions < 3) pathEl.textContent = 'История начинается...';
+          else if (state.decisions < 8) pathEl.textContent = 'Ты идёшь по дороге...';
+          else if (state.decisions < 15) pathEl.textContent = 'Тьма и Свет борются...';
+          else pathEl.textContent = 'Финал близок...';
+        }
+
+        const act = state.relics >= 8 ? 'III' : state.relics >= 4 ? 'II' : 'I';
+        state.act = act === 'I' ? 1 : act === 'II' ? 2 : 3;
+        actEl.textContent = act;
+      }
+
+      function updateCharPanel() {
+        charAvatar.textContent = getCharAvatar();
+        charName.textContent = 'Безымянный Странник';
+        charTitle.textContent = getCharTitle();
+        charHp.textContent = Math.max(0, state.hp);
+        charMaxHp.textContent = state.maxHp;
+        charGold.textContent = state.gold;
+        charRelics.textContent = state.relics;
+        charSoul.textContent = state.soul;
+        charLevel.textContent = state.level;
+        charAllies.textContent = countAllies() + '/6';
+        charHpBar.style.width = Math.max(0, Math.min(100, (state.hp / state.maxHp) * 100)) + '%';
+
+        inventoryGrid.innerHTML = '';
+        const items = Object.keys(itemDescriptions).filter(k => state[k]);
+        if (items.length === 0) {
+          inventoryGrid.innerHTML = '<div class="inv-empty">Инвентарь пуст</div>';
+        } else {
+          items.forEach(k => {
+            const item = itemDescriptions[k];
+            const div = document.createElement('div');
+            div.className = 'inv-item';
+            div.innerHTML = `
+              <span class="inv-icon">${item.icon}</span>
+              <span class="inv-name">${item.name}<small>${item.desc} · ${item.effect}</small></span>
+            `;
+            inventoryGrid.appendChild(div);
+          });
+        }
+
+        allyList.innerHTML = '';
+        const allyKeys = Object.keys(allyDescriptions);
+        let hasAny = false;
+        allyKeys.forEach(k => {
+          const isAlive = state[k];
+          const isLost = state[k.replace('ally', 'lost')];
+          if (!isAlive && !isLost) return;
+          hasAny = true;
+          const ally = allyDescriptions[k];
+          const worldviews = { light: 'Свет', dark: 'Тьма', neutral: 'Нейтрал', chaos: 'Хаос' };
+          const div = document.createElement('div');
+          div.className = 'ally-item' + (isLost ? ' lost' : '');
+          div.innerHTML = `
+            <span class="ally-icon">${isLost ? '💀' : ally.icon}</span>
+            <div style="flex:1;">
+              <div class="ally-name">${ally.name} ${isLost ? '(потерян)' : ''}
+                <span class="worldview-tag ${ally.worldview}">${worldviews[ally.worldview]}</span>
+              </div>
+              <div class="ally-desc">${ally.desc}</div>
+            </div>
+          `;
+          allyList.appendChild(div);
+        });
+        if (!hasAny) {
+          allyList.innerHTML = '<div class="inv-empty">У тебя пока нет союзников</div>';
+        }
+
+        journalList.innerHTML = '';
+        if (state.journal.length === 0) {
+          journalList.innerHTML = '<li>Твоя история ещё не написана...</li>';
+        } else {
+          state.journal.slice().reverse().forEach(entry => {
+            const li = document.createElement('li');
+            if (typeof entry === 'string') {
+              li.textContent = '• ' + entry;
+            } else {
+              li.textContent = '• ' + entry.text;
+              if (entry.type === 'loss') li.classList.add('loss');
+              if (entry.type === 'gain') li.classList.add('gain');
+              if (entry.type === 'relic') li.classList.add('relic');
+            }
+            journalList.appendChild(li);
+          });
+        }
+      }
+
+      function applyPoints(points) {
+        if (!points) return;
+        for (const [side, val] of Object.entries(points)) {
+          state.points[side] = (state.points[side] || 0) + val;
+        }
+      }
+
+      // ==================== КОДЕКС UI ====================
+      let currentCodexTab = 'characters';
+
+      function renderCodexTabs() {
+        codexTabs.innerHTML = '';
+        const tabs = [
+          { key: 'characters', label: '👥 Персонажи' },
+          { key: 'relics', label: '📜 Реликвии' },
+          { key: 'locations', label: '🗺️ Места' },
+          { key: 'creatures', label: '🐉 Существа' }
+        ];
+        tabs.forEach(t => {
+          const tab = document.createElement('button');
+          tab.className = 'codex-tab' + (currentCodexTab === t.key ? ' active' : '');
+          tab.textContent = t.label;
+          tab.addEventListener('click', () => {
+            currentCodexTab = t.key;
+            renderCodexTabs();
+            renderCodexContent();
+          });
+          codexTabs.appendChild(tab);
+        });
+      }
+
+      function renderCodexContent() {
+        const category = codexData[currentCodexTab];
+        codexContent.innerHTML = '';
+
+        // Счётчик
+        const totalEntries = Object.keys(category.entries).length;
+        const unlockedCount = Object.keys(category.entries).filter(k => state.codexUnlocked[k]).length;
+        codexProgress.textContent = `Открыто: ${unlockedCount} / ${totalEntries} · ${category.title}`;
+
+        Object.keys(category.entries).forEach(key => {
+          const entry = category.entries[key];
+          const isUnlocked = state.codexUnlocked[key];
+          const div = document.createElement('div');
+          div.className = 'codex-entry' + (isUnlocked ? ' unlocked' : ' locked');
+          if (isUnlocked) {
+            div.innerHTML = `
+              <div class="codex-icon">${entry.icon}</div>
+              <div class="codex-info">
+                <div class="codex-title">${entry.title}</div>
+                <div class="codex-desc">${entry.desc}</div>
+              </div>
+            `;
+          } else {
+            div.innerHTML = `
+              <div class="codex-icon">❓</div>
+              <div class="codex-info">
+                <div class="codex-title">???</div>
+                <div class="codex-desc">Эта запись ещё не открыта. Продолжай исследовать мир.</div>
+              </div>
+            `;
+          }
+          codexContent.appendChild(div);
+        });
+      }
+
+      function showCodex() {
+        audio.sfxClick();
+        renderCodexTabs();
+        renderCodexContent();
+        codexPanel.classList.add('open');
+      }
+
+      // ==================== БОЙ ====================
+      function startBattle(battleData, sceneKey) {
+        state.inBattle = true;
+        state.battleName = battleData.name;
+        state.battleMaxHp = battleData.hp;
+        state.battleHp = battleData.hp;
+        state.battleReturnScene = battleData.returnScene;
+        state.battleTurn = 0;
+
+        battleHud.classList.add('active');
+        rpgContainer.classList.add('battle-mode');
+        battleTitle.textContent = '⚔ БИТВА: ' + battleData.name;
+        updateBattleHud();
+        audio.startMusic('battle');
+
+        let startBonus = 0;
+        if (state.hasAmulet) startBonus += 10;
+        if (state.hasDragonScale) startBonus += 25;
+        if (startBonus > 0) state.hp = Math.min(state.maxHp, state.hp + startBonus);
+
+        showBattleActions();
+      }
+
+      function updateBattleHud() {
+        const pct = Math.max(0, (state.battleHp / state.battleMaxHp) * 100);
+        battleHpFill.style.width = pct + '%';
+        battleHpText.textContent = Math.max(0, state.battleHp);
+        battleMaxHpText.textContent = state.battleMaxHp;
+      }
+
+      function showBattleActions() {
+        const choices = [];
+        let attackDmg = 15;
+        if (state.hasSword) attackDmg += 5;
+        if (state.hasCrystal) attackDmg += 10;
+        if (state.hasDarkBlade) attackDmg += 15;
+        choices.push({ text: `⚔️ Атаковать (урон ~${attackDmg})`, action: 'attack' });
+        if (state.hasScroll) choices.push({ text: '📜 Использовать Свиток Света', action: 'scroll' });
+        if (state.hasCrystal) choices.push({ text: '🔮 Сила Кристалла', action: 'crystal' });
+        if (state.hasChaosCoin) choices.push({ text: '🪙 Монета Хаоса', action: 'coin' });
+        if (state.hasTear) choices.push({ text: '💧 Слеза Элирии (исцеление)', action: 'tear' });
+        if (state.hasShadowCrown) choices.push({ text: '👑 Теневая Корона', action: 'crown' });
+        if (state.hasDreamShard) choices.push({ text: '💎 Осколок Сна', action: 'dream' });
+        choices.push({ text: '🛡️ Защищаться', action: 'defend' });
+        renderBattleChoices(choices);
+      }
+
+      function renderBattleChoices(choices) {
+        choicesPanel.innerHTML = '';
+        choices.forEach(choice => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn battle-choice';
+          btn.innerHTML = `<span class="icon">⚔️</span> ${choice.text}`;
+          btn.addEventListener('click', () => {
+            audio.sfxClick();
+            handleBattleAction(choice.action);
+          });
+          choicesPanel.appendChild(btn);
+        });
+      }
+
+      function handleBattleAction(action) {
+        state.battleTurn++;
+        let playerDmg = 0;
+        let enemyDmg = 0;
+        let log = '';
+
+        if (action === 'attack') {
+          playerDmg = 15;
+          if (state.hasSword) playerDmg += 5;
+          if (state.hasCrystal) playerDmg += 10;
+          if (state.hasDarkBlade) playerDmg += 15;
+          if (state.battleName.includes('Лич')) playerDmg = Math.floor(playerDmg * 0.7);
+          log = `Ты атакуешь и наносишь <span class="danger">${playerDmg}</span> урона!`;
+          audio.sfxHit();
+        } else if (action === 'scroll') {
+          playerDmg = 999;
+          state.hasScroll = false;
+          log = `📜 Свиток Света вспыхивает! Враг уничтожен!`;
+          audio.sfxCrit();
+        } else if (action === 'crystal') {
+          playerDmg = 30;
+          state.hp = Math.max(1, state.hp - 5);
+          log = `🔮 <span class="danger">${playerDmg}</span> урона, но -5 HP.`;
+          audio.sfxHit();
+        } else if (action === 'coin') {
+          const roll = Math.random();
+          if (roll < 0.33) { playerDmg = 50; log = `🪙 Орел! <span class="danger">50</span> урона!`; audio.sfxCrit(); }
+          else if (roll < 0.66) { playerDmg = 0; state.hp = Math.max(1, state.hp - 15); log = `🪙 Решка... -15 HP.`; audio.sfxHit(); }
+          else { playerDmg = 20; log = `🪙 Ребро... <span class="danger">20</span> урона.`; audio.sfxHit(); }
+        } else if (action === 'tear') {
+          state.hp = Math.min(state.maxHp, state.hp + 30);
+          log = `💧 +30 HP!`;
+          audio.sfxRelic();
+        } else if (action === 'crown') {
+          playerDmg = 25;
+          log = `👑 Оглушение! <span class="danger">25</span> урона, враг пропускает ход.`;
+          audio.sfxHit();
+          state.battleSkipEnemy = true;
+        } else if (action === 'dream') {
+          playerDmg = 5;
+          log = `💎 Осколок Сна. Враг пропускает ход.`;
+          audio.sfxDream();
+          state.battleSkipEnemy = true;
+        } else if (action === 'defend') {
+          playerDmg = 0;
+          state.battleDefending = true;
+          log = `🛡️ Ты защищаешься.`;
+        }
+
+        if (playerDmg > 0) state.battleHp = Math.max(0, state.battleHp - playerDmg);
+
+        if (state.battleHp <= 0) {
+          updateBattleHud();
+          setTimeout(() => endBattle(true, log), 400);
+          return;
+        }
+
+        if (!state.battleSkipEnemy) {
+          enemyDmg = 12 + Math.floor(state.battleTurn * 1.5);
+          if (state.battleName.includes('Лич')) enemyDmg += 8;
+          if (state.battleName.includes('Моргор')) enemyDmg += 15;
+          if (state.battleDefending) enemyDmg = Math.floor(enemyDmg * 0.4);
+          if (state.hasStarSilver) enemyDmg = Math.floor(enemyDmg * 0.7);
+          if (state.hasAmulet) enemyDmg = Math.floor(enemyDmg * 0.85);
+          state.hp = Math.max(0, state.hp - enemyDmg);
+          log += `<br>${state.battleName} атакует: <span class="danger">${enemyDmg}</span> урона!`;
+        }
+        state.battleSkipEnemy = false;
+        state.battleDefending = false;
+
+        if (state.hp <= 0) {
+          updateBattleHud();
+          updateStatus();
+          setTimeout(() => endBattle(false, log), 400);
+          return;
+        }
+
+        updateBattleHud();
+        updateStatus();
+        storyEl.innerHTML = `<p class="epic">⚔ БИТВА: ${state.battleName}</p><p>${log}</p>`;
+        setTimeout(() => showBattleActions(), 600);
+      }
+
+      function endBattle(victory) {
+        state.inBattle = false;
+        battleHud.classList.remove('active');
+        rpgContainer.classList.remove('battle-mode');
+        audio.startMusic(getFactionInfo().music || 'menu');
+        if (victory) {
+          if (state.battleReturnScene) renderScene(state.battleReturnScene);
+          else renderScene('road');
+        } else {
+          renderScene('gameover_scene');
+        }
+      }
+
+      // ==================== РЕНДЕР ====================
+      function renderScene(sceneKey) {
+        if (state.inBattle) return;
+        if (state.hp <= 0 && sceneKey !== 'gameover_scene') sceneKey = 'gameover_scene';
+
+        const scene = scenes[sceneKey];
+        if (!scene) {
+          console.error('Сцена не найдена:', sceneKey);
+          return;
+        }
+
+        state.currentScene = sceneKey;
+        let sceneData = scene;
+        if (scene.dynamic) sceneData = scene.dynamic(state);
+
+        if (sceneData.effect && !sceneData._effectApplied) { sceneData.effect(state); sceneData._effectApplied = true; }
+        if (scene.effect && !scene._effectApplied && !scene.dynamic) { scene.effect(state); scene._effectApplied = true; }
+
+        // Открытие записей кодекса при входе в сцену
+        if (sceneData.codexOnEnter) {
+          sceneData.codexOnEnter.forEach(k => unlockCodex(k));
+        }
+
+        if (state.hp <= 0 && sceneKey !== 'gameover_scene' && !sceneData.ending && !sceneData.battle) {
+          renderScene('gameover_scene');
+          return;
+        }
+
+        updateStatus();
+        if (sceneData.location) locationEl.textContent = sceneData.location;
+
+        if (sceneData.battle) {
+          storyEl.innerHTML = `<p>${sceneData.text}</p>`;
+          choicesPanel.innerHTML = '';
+          setTimeout(() => startBattle(sceneData.battle, sceneKey), 500);
+          return;
+        }
+
+        if (sceneData.ending) {
+          const ending = endings[sceneData.ending];
+          if (!ending) return renderScene('gameover_scene');
+
+          rpgContainer.classList.remove('mad-ending');
+          rpgContainer.classList.remove('dream-ending');
+          if (sceneData.ending === 'chaos_mad_god' || sceneData.ending === 'chaos_void') rpgContainer.classList.add('mad-ending');
+          if (sceneData.ending === 'it_was_all_a_dream' || sceneData.ending === 'dream_awakening') { rpgContainer.classList.add('dream-ending'); audio.sfxDream(); }
+
+          unlockEnding(sceneData.ending);
+          audio.sfxEnding();
+          audio.startMusic('menu');
+
+          storyEl.innerHTML = `
+            <p style="color: ${ending.color}; font-size: 1.25rem; text-align: center; margin-bottom: 14px; text-shadow: 0 0 12px ${ending.color}; font-weight: 600;">${ending.title}</p>
+            <p>${ending.text}</p>
+            <p style="margin-top: 14px; color: #6e6455; font-style: italic; font-size: 0.85rem; text-align: center;">Решений: ${state.decisions} · Путь: ${getFactionInfo().name} · Реликвий: ${state.relics} · Союзников: ${countAllies()}/6</p>
+            <p style="margin-top: 8px; color: #9fd18f; text-align: center; font-size: 0.8rem;">✔ Концовка добавлена в коллекцию</p>
+          `;
+          choicesPanel.innerHTML = '';
+          const btnAgain = document.createElement('button');
+          btnAgain.className = 'choice-btn';
+          btnAgain.innerHTML = '<span class="icon">🔄</span> Пройти путь заново';
+          btnAgain.addEventListener('click', () => { audio.sfxClick(); resetGame(); });
+          choicesPanel.appendChild(btnAgain);
+          const btnMenu = document.createElement('button');
+          btnMenu.className = 'choice-btn';
+          btnMenu.innerHTML = '<span class="icon">🏠</span> В главное меню';
+          btnMenu.addEventListener('click', () => { audio.sfxClick(); showMainMenu(); });
+          choicesPanel.appendChild(btnMenu);
+          return;
+        }
+
+        storyEl.innerHTML = sceneData.text.startsWith('<div') ? sceneData.text : `<p>${sceneData.text}</p>`;
+        storyEl.classList.add('fade-in');
+        setTimeout(() => storyEl.classList.remove('fade-in'), 400);
+        choicesPanel.innerHTML = '';
+
+        if (!sceneData.choices || sceneData.choices.length === 0) {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.innerHTML = '<span class="icon">🏠</span> В главное меню';
+          btn.addEventListener('click', () => { audio.sfxClick(); showMainMenu(); });
+          choicesPanel.appendChild(btn);
+          return;
+        }
+
+        const availableChoices = sceneData.choices.filter(choice => {
+          if (choice.require && !choice.require(state)) return false;
+          const choiceId = sceneKey + '::' + choice.text;
+          if (state.usedChoices[choiceId]) return false;
+          return true;
+        });
+
+        availableChoices.forEach(choice => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          if (choice.special) btn.classList.add('special');
+          if (choice.soul && choice.soul <= -15) btn.classList.add('danger-choice');
+          if (choice.dreamChoice) btn.classList.add('dream-choice');
+          if (choice.relicChoice) btn.classList.add('battle-choice');
+
+          let icon = '✦';
+          const t = choice.text;
+          const iconMap = {
+            '☀️': '☀️', '🌑': '🌑', '⚖️': '⚖️', '🎭': '🎭', '🌲': '🌲',
+            '⛰️': '⛰️', '🏚️': '🏚️', '🌫️': '🌫️', '⛪': '⛪', '🗼': '🗼',
+            '🌊': '🌊', '⛏️': '⛏️', '🕯️': '🕯️', '🤝': '🤝', '⚔️': '⚔️',
+            '💥': '💥', '🚶': '🚶', '🩹': '🩹', '🧩': '🧩', '🚪': '🚪',
+            '🗡️': '🗡️', '🔮': '🔮', '💰': '💰', '❓': '❓', '🙏': '🙏',
+            '👻': '👻', '🗣️': '🗣️', '💔': '💔', '🔓': '🔓', '📖': '📖',
+            '🕊️': '🕊️', '💀': '💀', '💠': '💠', '📚': '📚', '📜': '📜',
+            '👁️': '👁️', '🐉': '🐉', '👑': '👑', '🃏': '🃏', '🕳️': '🕳️',
+            '👨‍👩‍👧': '👨‍👩‍👧', '⭐': '⭐', '🧙‍♀️': '🧙‍♀️', '🧠': '🧠',
+            '🔥': '🔥', '🏃': '🏃', '💢': '💢', '😢': '😢', '🎩': '🎩',
+            '🤡': '🤡', '🌿': '🌿', '🎪': '🎪', '☯️': '☯️', '💫': '💫',
+            '🪓': '🪓', '🛡️': '🛡️', '💭': '💭', '🏟️': '🏟️', '🏆': '🏆',
+            '🌅': '🌅'
+          };
+          for (const [k, v] of Object.entries(iconMap)) {
+            if (t.includes(k)) { icon = v; break; }
+          }
+
+          const cleanText = t.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim();
+          btn.innerHTML = `<span class="icon">${icon}</span> ${cleanText || t}`;
+
+          btn.addEventListener('click', () => {
+            audio.sfxClick();
+            state.decisions++;
+            const choiceId = sceneKey + '::' + choice.text;
+            state.usedChoices[choiceId] = true;
+            if (choice.points) applyPoints(choice.points);
+            if (choice.soul) state.soul = Math.max(0, Math.min(100, state.soul + choice.soul));
+            if (choice.next) renderScene(choice.next);
+          });
+          choicesPanel.appendChild(btn);
+        });
+
+        if (availableChoices.length === 0) {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.innerHTML = '<span class="icon">🏠</span> В главное меню';
+          btn.addEventListener('click', () => { audio.sfxClick(); showMainMenu(); });
+          choicesPanel.appendChild(btn);
+        }
+      }
+
+      function resetGame() {
+        Object.assign(state, {
+          hp: 100, maxHp: 100, gold: 20, relics: 0, level: 1, xp: 0,
+          soul: 50, act: 1, faction: 'none',
+          points: { light: 0, dark: 0, neutral: 0, chaos: 0 },
+          hasSword: false, hasAmulet: false, hasKey: false, hasCrystal: false,
+          hasTear: false, hasRing: false, hasScroll: false, hasDarkBlade: false,
+          hasStarSilver: false, hasGoblinAmulet: false, hasChaosCoin: false,
+          hasShadowCrown: false, hasDreamShard: false, hasDragonScale: false,
+          allyAelin: false, allyGrum: false, allyMira: false,
+          allyNira: false, allyTorvin: false, allyKael: false,
+          lostAelin: false, lostGrum: false, lostMira: false,
+          lostNira: false, lostTorvin: false, lostKael: false,
+          knowsProphecy: false, knowsMorgorWeakness: false, knowsEliria: false,
+          knowsTrueName: false, knowsBloodline: false, knowsRitual: false,
+          killedGrum: false, killedSpirit: false, killedInnocent: false,
+          sparedGoblin: false, betrayedAlly: false,
+          visitedForest: false, visitedMountains: false, visitedRuins: false,
+          visitedSwamp: false, visitedVillage: false, visitedTower: false,
+          visitedCave: false, visitedLake: false, visitedShrine: false, visitedMines: false,
+          visitedArena: false,
+          morghorWeakened: false, morghorDead: false, morghorRedeemed: false,
+          eliriaFreed: false, prophecyFulfilled: false, curseBroken: false,
+          currentScene: 'intro', decisions: 0, journal: [],
+          readForbiddenBook: false, usedChoices: {},
+          inBattle: false, battleHp: 0, battleMaxHp: 0,
+          battleName: '', battleTurn: 0, battleReturnScene: '',
+          battleSkipEnemy: false, battleDefending: false,
+          dreamHints: 0
+        });
+
+        Object.keys(scenes).forEach(key => {
+          if (scenes[key]._effectApplied) delete scenes[key]._effectApplied;
+        });
+
+        rpgContainer.classList.remove('mad-ending');
+        rpgContainer.classList.remove('dream-ending');
+        rpgContainer.classList.remove('battle-mode');
+        battleHud.classList.remove('active');
+        rpgContainer.style.display = 'block';
+        mainMenu.classList.add('hidden');
+
+        audio.startMusic('menu');
+        updateStatus();
+        renderScene('intro');
+      }
+
+      function showMainMenu() {
+        mainMenu.classList.remove('hidden');
+        rpgContainer.style.display = 'none';
+        charPanel.classList.remove('open');
+        codexPanel.classList.remove('open');
+        collectionPanel.classList.remove('open');
+        settingsPanel.classList.remove('open');
+        aboutPanel.classList.remove('open');
+        audio.startMusic('menu');
+      }
+
+      function renderCollection() {
+        const endingKeys = Object.keys(endings);
+        const total = endingKeys.length;
+        const unlockedCount = endingKeys.filter(k => unlockedEndings[k]).length;
+        collectionProgress.innerHTML = `Открыто: <strong>${unlockedCount}</strong> / ${total}`;
+        collectionGrid.innerHTML = '';
+
+        // Сортируем по редкости
+        const rarityOrder = { mythic: 0, legendary: 1, epic: 2, rare: 3, common: 4 };
+        endingKeys.sort((a, b) => (rarityOrder[endings[a].rarity] || 5) - (rarityOrder[endings[b].rarity] || 5));
+
+        endingKeys.forEach(key => {
+          const e = endings[key];
+          const isUnlocked = !!unlockedEndings[key];
+          const rarityNames = { common: 'Обычная', rare: 'Редкая', epic: 'Эпическая', legendary: 'Легендарная', mythic: 'Мифическая' };
+          const card = document.createElement('div');
+          card.className = 'ending-card ' + (isUnlocked ? 'unlocked ' : 'locked ') + (e.rarity || 'common');
+          if (isUnlocked) {
+            card.innerHTML = `
+              <div class="ending-rarity ${e.rarity || 'common'}">${rarityNames[e.rarity] || 'Обычная'}</div>
+              <div class="ending-name" style="color:${e.color};">${e.title}</div>
+              <div class="ending-desc">${e.text.substring(0, 80)}...</div>
+              <div class="ending-status">✔ Открыто</div>
+            `;
+          } else {
+            card.innerHTML = `
+              <div class="ending-rarity ${e.rarity || 'common'}">${rarityNames[e.rarity] || 'Обычная'}</div>
+              <div class="ending-name">???</div>
+              <div class="ending-desc">Эта концовка ещё не открыта.</div>
+              <div class="ending-status">🔒 Закрыто</div>
+            `;
+          }
+          collectionGrid.appendChild(card);
+        });
+      }
+
+      // ==================== ОБРАБОТЧИКИ ====================
+      btnStart.addEventListener('click', () => { audio.init(); audio.resume(); audio.sfxClick(); resetGame(); });
+
+      btnCollection.addEventListener('click', () => { audio.init(); audio.resume(); audio.sfxClick(); renderCollection(); collectionPanel.classList.add('open'); });
+      closeCollection.addEventListener('click', () => { audio.sfxClick(); collectionPanel.classList.remove('open'); });
+      collectionPanel.addEventListener('click', (e) => { if (e.target === collectionPanel) collectionPanel.classList.remove('open'); });
+
+      btnCodexMenu.addEventListener('click', () => { audio.init(); audio.resume(); showCodex(); });
+      closeCodex.addEventListener('click', () => { audio.sfxClick(); codexPanel.classList.remove('open'); });
+      codexPanel.addEventListener('click', (e) => { if (e.target === codexPanel) codexPanel.classList.remove('open'); });
+
+      btnSettings.addEventListener('click', () => {
+        audio.init(); audio.resume(); audio.sfxClick();
+        musicSlider.value = settings.music;
+        musicVal.textContent = settings.music;
+        sfxSlider.value = settings.sfx;
+        sfxVal.textContent = settings.sfx;
+        animToggle.checked = settings.animations;
+        settingsPanel.classList.add('open');
+      });
+      closeSettings.addEventListener('click', () => { audio.sfxClick(); settingsPanel.classList.remove('open'); });
+      settingsPanel.addEventListener('click', (e) => { if (e.target === settingsPanel) settingsPanel.classList.remove('open'); });
+
+      musicSlider.addEventListener('input', () => {
+        settings.music = parseInt(musicSlider.value, 10);
+        musicVal.textContent = settings.music;
+        audio.setMusicVolume(settings.music);
+        persistSave();
+      });
+      sfxSlider.addEventListener('input', () => {
+        settings.sfx = parseInt(sfxSlider.value, 10);
+        sfxVal.textContent = settings.sfx;
+        audio.setSfxVolume(settings.sfx);
+        persistSave();
+      });
+      animToggle.addEventListener('change', () => {
+        settings.animations = animToggle.checked;
+        persistSave();
+      });
+      resetCollection.addEventListener('click', () => {
+        if (confirm('Сбросить всю коллекцию концовок?')) {
+          unlockedEndings = {};
+          persistSave();
+          renderCollection();
+        }
+      });
+      resetCodex.addEventListener('click', () => {
+        if (confirm('Сбросить весь кодекс мира?')) {
+          state.codexUnlocked = {};
+          persistSave();
+          renderCodexContent();
+        }
+      });
+
+      btnAbout.addEventListener('click', () => { audio.init(); audio.resume(); audio.sfxClick(); aboutPanel.classList.add('open'); });
+      closeAbout.addEventListener('click', () => { audio.sfxClick(); aboutPanel.classList.remove('open'); });
+      aboutPanel.addEventListener('click', (e) => { if (e.target === aboutPanel) aboutPanel.classList.remove('open'); });
+
+      openCharBtn.addEventListener('click', () => { audio.sfxClick(); updateCharPanel(); charPanel.classList.add('open'); });
+      closeCharBtn.addEventListener('click', () => { audio.sfxClick(); charPanel.classList.remove('open'); });
+      charPanel.addEventListener('click', (e) => { if (e.target === charPanel) charPanel.classList.remove('open'); });
+
+      openCodexBtn.addEventListener('click', () => { audio.sfxClick(); showCodex(); });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          charPanel.classList.remove('open');
+          codexPanel.classList.remove('open');
+          collectionPanel.classList.remove('open');
+          settingsPanel.classList.remove('open');
+          aboutPanel.classList.remove('open');
+        }
+      });
+
+      document.addEventListener('click', function unlockAudio() {
+        audio.init(); audio.resume();
+        document.removeEventListener('click', unlockAudio);
+      }, { once: false });
+
+      // ==================== СТАРТ ====================
+      loadSave();
+      showMainMenu();
+    })();
+  </script>
+</body>
+</html>
